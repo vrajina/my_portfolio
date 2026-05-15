@@ -2,7 +2,9 @@
 ---
 <header class="site-header">
   <div class="logo">
-    <a href="/">[LOGO] EXECUTIVE</a>
+    <a href="/">
+      <img src="/logo.png" alt="KADATSKY" class="logo-img" />
+    </a>
   </div>
   <nav class="main-nav">
     <ul>
@@ -21,21 +23,24 @@
     top: 0;
     left: 0;
     width: 100%;
-    padding: 1.5rem 3rem;
+    padding: 1rem 3rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 1000;
-    backdrop-filter: blur(12px);
-    background: rgba(15, 23, 42, 0.7);
-    border-bottom: 1px solid var(--border-color);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    background: rgba(10, 14, 26, 0.8);
+    border-bottom: 1px solid rgba(0, 240, 255, 0.08);
   }
-  .logo a {
-    font-family: 'Outfit', sans-serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    letter-spacing: 1px;
+  .logo-img {
+    height: 32px;
+    width: auto;
+    filter: brightness(1.1);
+    transition: filter 0.3s ease;
+  }
+  .logo-img:hover {
+    filter: brightness(1.3) drop-shadow(0 0 8px rgba(0, 240, 255, 0.4));
   }
   .main-nav {
     position: absolute;
@@ -49,26 +54,29 @@
     align-items: center;
   }
   .main-nav a {
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
     color: var(--text-secondary);
   }
   .main-nav a:hover {
-    color: var(--accent-cyan);
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
   }
   .btn-outline {
-    border: 1px solid var(--accent-cyan);
+    border: 1px solid var(--neon-cyan);
     padding: 0.5rem 1.2rem;
-    border-radius: 20px;
-    color: var(--accent-cyan) !important;
+    border-radius: 4px;
+    color: var(--neon-cyan) !important;
     transition: all 0.3s ease;
   }
   .btn-outline:hover {
-    background: rgba(6, 182, 212, 0.1);
-    box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+    background: rgba(0, 240, 255, 0.08);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
   }
 
-  /* Адаптивность (Mobile) */
   @media (max-width: 900px) {
     .site-header {
       padding: 1rem;
@@ -76,8 +84,7 @@
     .main-nav {
       position: static;
       transform: none;
-      display: none; /* В реальном проекте здесь будет бургер-меню */
+      display: none;
     }
-    /* Для заглушки мобильного вида пока просто скроем меню, чтобы не ломать верстку */
   }
 </style>
