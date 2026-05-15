@@ -1,0 +1,119 @@
+---
+const currentYear = new Date().getFullYear();
+---
+<footer class="site-footer" id="contacts">
+  <div class="footer-content">
+    <div class="footer-nav">
+      <h4>Навигация</h4>
+      <ul>
+        <li><a href="#about">Обо мне</a></li>
+        <li><a href="#services">Услуги</a></li>
+        <li><a href="#portfolio">Кейсы</a></li>
+        <li><a href="/blog">Блог</a></li>
+      </ul>
+    </div>
+    
+    <div class="footer-contacts">
+      <h4>Контакты</h4>
+      <ul>
+        <li><a href="mailto:hello@example.com">hello@example.com</a></li>
+        <li><a href="#">Telegram</a></li>
+        <li><a href="#">MACS Alumni</a></li>
+      </ul>
+    </div>
+    
+    <div class="footer-gimmick">
+      <div class="reactor-status">
+        <span class="pulse-dot"></span>
+        <span>AI Core Status: <strong style="color: var(--accent-neon)">Optimal</strong></span>
+      </div>
+      <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="surface-btn">
+        ↑ Всплыть на поверхность
+      </button>
+    </div>
+  </div>
+  
+  <div class="footer-bottom">
+    <p>&copy; {currentYear} E-commerce Executive. All rights reserved.</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    position: relative;
+    z-index: 20;
+    background: var(--bg-primary);
+    border-top: 1px solid var(--accent-neon);
+    padding: 4rem 3rem 2rem;
+    color: var(--text-secondary);
+  }
+  .footer-content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 3rem;
+    max-width: 1200px;
+    margin: 0 auto 3rem auto;
+  }
+  h4 {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+    font-family: 'Outfit', sans-serif;
+  }
+  ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  .footer-gimmick {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1.5rem;
+  }
+  .reactor-status {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: 'Outfit', sans-serif;
+    padding: 0.75rem 1.2rem;
+    background: rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 8px;
+  }
+  .pulse-dot {
+    width: 10px;
+    height: 10px;
+    background-color: var(--accent-neon);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent-neon);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(139, 92, 246, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+  }
+  .surface-btn {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 0.8rem 1.5rem;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+  }
+  .surface-btn:hover {
+    background: var(--text-primary);
+    color: var(--bg-primary);
+  }
+  .footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.9rem;
+  }
+</style>

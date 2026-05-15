@@ -1,0 +1,64 @@
+---
+interface Props {
+  caseTitle: string;
+  metrics: string;
+  reviewText: string;
+  reviewerName: string;
+  reviewerRole: string;
+}
+
+const { caseTitle, metrics, reviewText, reviewerName, reviewerRole } = Astro.props;
+---
+
+<div class="case-review-card glass-panel">
+  <div class="case-section">
+    <h3>{caseTitle}</h3>
+    <div class="metrics">{metrics}</div>
+  </div>
+  <div class="review-section">
+    <p class="quote">"{reviewText}"</p>
+    <div class="author">
+      <strong>{reviewerName}</strong>
+      <span>{reviewerRole}</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .case-review-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    border-color: var(--accent-cyan);
+    background: rgba(15, 23, 42, 0.85); /* Делаем чуть темнее для лучшей читаемости на фоне льда */
+  }
+  .case-section h3 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+  .metrics {
+    color: var(--accent-cyan);
+    font-weight: bold;
+    font-size: 1.1rem;
+  }
+  .review-section {
+    border-top: 1px dashed var(--border-color);
+    padding-top: 1rem;
+    font-style: italic;
+  }
+  .quote {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+  }
+  .author strong {
+    display: block;
+    color: var(--text-primary);
+    font-style: normal;
+  }
+  .author span {
+    font-size: 0.85rem;
+    color: var(--accent-cyan);
+    font-style: normal;
+  }
+</style>

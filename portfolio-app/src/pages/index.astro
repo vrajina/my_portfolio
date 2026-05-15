@@ -1,0 +1,234 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="E-commerce Executive | Portfolio">
+	<main class="scrollytelling-container">
+		<!-- Фоновое изображение айсберга -->
+		<div class="iceberg-background"></div>
+		
+		<!-- Шахта лифта по центру -->
+		<div class="elevator-shaft">
+			
+			<!-- Уровень 0: Верхушка (Над водой) -->
+			<section class="floor top-floor">
+				<div class="glass-panel">
+					<h1>E-commerce Expert</h1>
+					<p>Управляю процессами, которые скрыты от глаз покупателей.</p>
+					<a href="#floor-1" class="scroll-down-btn">Погрузиться ↓</a>
+				</div>
+			</section>
+
+			<!-- Уровень 1: Пошив и Фотостудия -->
+			<section id="floor-1" class="floor">
+				<div class="glass-panel">
+					<h2>01. Продукт и Контент</h2>
+					<p>Организация швейных цехов, контроль качества и запуск контент-студий.</p>
+				</div>
+			</section>
+
+			<!-- Уровень 2: Саппорт и Разработчики -->
+			<section class="floor">
+				<div class="glass-panel">
+					<h2>02. Сервис и Разработка</h2>
+					<p>Выстраивание работы клиентского сервиса и управление IT-командами (включая AI-ботов).</p>
+				</div>
+			</section>
+
+			<!-- Уровень 3: Фулфилмент и Логистика -->
+			<section class="floor">
+				<div class="glass-panel">
+					<h2>03. Логистика</h2>
+					<p>Управление складами, бесшовный фулфилмент и маршрутизация доставки.</p>
+				</div>
+			</section>
+
+			<!-- Уровень 4 (Дно): АИ-Реактор -->
+			<section class="floor bottom-floor">
+				<div class="glass-panel reactor-panel">
+					<h2>Core: AI Reactor</h2>
+					<p>Внедрение машинного обучения во все процессы компании.</p>
+					
+					<!-- Форма заглушка -->
+					<form class="contact-form">
+						<input type="email" placeholder="Ваш Email" />
+						<button type="button">Связаться</button>
+					</form>
+				</div>
+			</section>
+
+		</div>
+	</main>
+</Layout>
+
+<style>
+	.scrollytelling-container {
+		position: relative;
+		width: 100%;
+		min-height: 500vh; /* 5 экранов для скролла */
+		overflow: hidden;
+	}
+
+	.iceberg-background {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-image: url('/iceberg.png?v=6');
+		background-size: auto 100%; /* Пропорционально растягиваем на все 500vh, обрезая края */
+		background-position: top center;
+		background-repeat: no-repeat;
+		z-index: -1;
+		opacity: 0.8;
+	}
+
+	.elevator-shaft {
+		position: relative;
+		width: 100%;
+		max-width: 600px;
+		margin: 0 auto; /* Позиционируем шахту строго по центру */
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		z-index: 10;
+		/* Добавляем виртуальную линию шахты лифта */
+		border-left: 2px dashed rgba(255,255,255,0.1);
+		border-right: 2px dashed rgba(255,255,255,0.1);
+	}
+
+	.floor {
+		width: 100%;
+		min-height: 100vh; /* Каждый этаж занимает высоту экрана */
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		padding: 2rem;
+	}
+
+	.top-floor {
+		text-align: center;
+	}
+
+	h1 {
+		font-size: 3rem;
+		margin-bottom: 0.5rem;
+		color: var(--text-primary);
+	}
+
+	h2 {
+		color: var(--accent-cyan);
+		font-size: 2rem;
+	}
+
+	.scroll-down-btn {
+		display: inline-block;
+		margin-top: 2rem;
+		padding: 1rem 2rem;
+		background: rgba(6, 182, 212, 0.2);
+		border: 1px solid var(--accent-cyan);
+		border-radius: 30px;
+		color: var(--accent-cyan);
+		font-weight: bold;
+	}
+
+	.reactor-panel {
+		border-color: var(--accent-neon);
+		box-shadow: 0 0 40px rgba(139, 92, 246, 0.3);
+	}
+
+	.reactor-panel h2 {
+		color: var(--accent-neon);
+	}
+
+	.contact-form {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		margin-top: 2rem;
+	}
+
+	input {
+		padding: 1rem;
+		background: rgba(0,0,0,0.5);
+		border: 1px solid var(--border-color);
+		color: white;
+		border-radius: 8px;
+		font-family: inherit;
+	}
+
+	button {
+		padding: 1rem;
+		background: var(--accent-neon);
+		border: none;
+		color: white;
+		font-weight: bold;
+		border-radius: 8px;
+		cursor: pointer;
+		font-family: inherit;
+		transition: opacity 0.3s;
+	}
+
+	button:hover {
+		opacity: 0.8;
+	}
+
+	/* Parallax & Fade Animations */
+	.animate-on-scroll {
+		opacity: 0;
+		transform: translateY(100px);
+		transition: opacity 1s ease-out, transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+	
+	.animate-on-scroll.is-visible {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	.animate-on-scroll.is-leaving {
+		opacity: 0;
+		transform: translateY(-100px);
+	}
+</style>
+
+<script>
+	// Настройка Intersection Observer для параллакса и исчезновения плашек
+	const setupObserver = () => {
+		const options = {
+			root: null,
+			rootMargin: '-10% 0px -10% 0px', // Срабатывает когда элемент немного вошел в экран
+			threshold: 0.1
+		};
+
+		const observer = new IntersectionObserver((entries) => {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					// Плашка вошла в зону видимости
+					entry.target.classList.add('is-visible');
+					entry.target.classList.remove('is-leaving');
+				} else {
+					// Плашка уходит из зоны видимости
+					if (entry.boundingClientRect.y < 0) {
+						// Уходит наверх
+						entry.target.classList.remove('is-visible');
+						entry.target.classList.add('is-leaving');
+					} else {
+						// Уходит вниз
+						entry.target.classList.remove('is-visible');
+						entry.target.classList.remove('is-leaving');
+					}
+				}
+			});
+		}, options);
+
+		// Добавляем класс animate-on-scroll всем glass-panel на странице
+		document.querySelectorAll('.glass-panel').forEach(panel => {
+			panel.classList.add('animate-on-scroll');
+			observer.observe(panel);
+		});
+	};
+
+	// Запускаем скрипт после загрузки DOM (с учетом роутинга Astro)
+	document.addEventListener('DOMContentLoaded', setupObserver);
+	document.addEventListener('astro:page-load', setupObserver);
+</script>
