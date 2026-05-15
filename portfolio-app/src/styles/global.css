@@ -70,7 +70,7 @@ a:hover {
 .glitch {
   position: relative;
   display: inline-block;
-  animation: glitch-skew 4s infinite linear alternate-reverse;
+  animation: glitch-skew 10s infinite linear alternate-reverse;
 }
 
 .glitch::before,
@@ -87,14 +87,14 @@ a:hover {
 .glitch::before {
   color: var(--neon-cyan);
   text-shadow: -2px 0 var(--neon-pink);
-  animation: glitch-anim-1 3s infinite linear alternate-reverse;
+  animation: glitch-anim-1 8s infinite linear alternate-reverse;
   clip-path: inset(0 0 80% 0);
 }
 
 .glitch::after {
   color: var(--neon-pink);
   text-shadow: 2px 0 var(--neon-cyan);
-  animation: glitch-anim-2 2.5s infinite linear alternate-reverse;
+  animation: glitch-anim-2 6s infinite linear alternate-reverse;
   clip-path: inset(80% 0 0 0);
 }
 
