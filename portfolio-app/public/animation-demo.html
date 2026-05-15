@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Выбор анимации перехода</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Rajdhani', sans-serif;
+    background: #0a0e1a;
+    color: #e2e8f0;
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  /* ===== PICKER UI ===== */
+  .picker {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(8,8,8,0.95);
+    border-bottom: 1px solid rgba(0,240,255,0.15);
+  }
+  .picker button {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    padding: 0.6rem 1.5rem;
+    border: 1px solid rgba(0,240,255,0.3);
+    background: transparent;
+    color: #8892a8;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .picker button.active {
+    background: rgba(0,240,255,0.1);
+    color: #00f0ff;
+    border-color: #00f0ff;
+    box-shadow: 0 0 15px rgba(0,240,255,0.2);
+  }
+  .picker button:hover { color: #00f0ff; }
+
+  /* ===== SCROLL CONTAINER ===== */
+  .container {
+    width: 100%;
+    height: 100vh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .container::-webkit-scrollbar { display: none; }
+
+  .screen {
+    width: 100%;
+    height: 100vh;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .screen:nth-child(1) { background: linear-gradient(180deg, #1e3a5f, #0d4a7a); }
+  .screen:nth-child(2) { background: linear-gradient(180deg, #0d4a7a, #083256); }
+  .screen:nth-child(3) { background: linear-gradient(180deg, #083256, #051e3a); }
+  .screen:nth-child(4) { background: linear-gradient(180deg, #051e3a, #030e1e); }
+
+  .panel {
+    max-width: 600px;
+    padding: 2.5rem 2rem;
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    text-align: center;
+  }
+  .panel h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+    color: #00f0ff;
+    text-transform: uppercase;
+  }
+  .panel p {
+    color: #c8d0e0;
+    line-height: 1.7;
+    font-size: 1rem;
+  }
+  .label {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.15);
+    font-family: 'Orbitron', monospace;
+    letter-spacing: 2px;
+  }
+
+  /* ========================================
+     ANIMATION A: SLIDE + FADE (снизу вверх)
+     ======================================== */
+  .anim-slide .panel {
+    opacity: 0;
+    transform: translateY(60px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .anim-slide .screen.visible .panel {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ========================================
+     ANIMATION B: ZOOM + FADE (приближение)
+     ======================================== */
+  .anim-zoom .panel {
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .anim-zoom .screen.visible .panel {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* ========================================
+     ANIMATION C: CINEMATIC (затемнение + параллакс)
+     ======================================== */
+  .anim-cine .screen {
+    transition: filter 0.6s ease;
+    filter: brightness(0.3);
+  }
+  .anim-cine .screen.visible {
+    filter: brightness(1);
+  }
+  .anim-cine .panel {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+    transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
+  }
+  .anim-cine .screen.visible .panel {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+</style>
+</head>
+<body>
+
+<div class="picker">
+  <button class="active" data-anim="slide">A: Slide + Fade</button>
+  <button data-anim="zoom">B: Zoom + Bounce</button>
+  <button data-anim="cine">C: Cinematic</button>
+</div>
+
+<div class="container anim-slide" id="container">
+  <div class="screen" data-i="0">
+    <div class="panel">
+      <h2>Поверхность</h2>
+      <p>Это главный экран. Прокрутите вниз, чтобы увидеть анимацию перехода между экранами.</p>
+    </div>
+    <div class="label">01 / 04</div>
+  </div>
+  <div class="screen" data-i="1">
+    <div class="panel">
+      <h2>Продукт и контент</h2>
+      <p>Второй уровень глубины. Обратите внимание, как появляется плашка при входе в секцию.</p>
+    </div>
+    <div class="label">02 / 04</div>
+  </div>
+  <div class="screen" data-i="2">
+    <div class="panel">
+      <h2>Коммуникации</h2>
+      <p>Третий уровень. Попробуйте переключить тип анимации кнопками сверху и прокрутить снова.</p>
+    </div>
+    <div class="label">03 / 04</div>
+  </div>
+  <div class="screen" data-i="3">
+    <div class="panel">
+      <h2>ИИ-Реактор</h2>
+      <p>Самая глубина. Какая анимация больше нравится?</p>
+    </div>
+    <div class="label">04 / 04</div>
+  </div>
+</div>
+
+<script>
+  const container = document.getElementById('container');
+  const screens = container.querySelectorAll('.screen');
+  const buttons = document.querySelectorAll('.picker button');
+
+  // Intersection Observer for visibility
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      } else {
+        entry.target.classList.remove('visible');
+      }
+    });
+  }, { root: container, threshold: 0.5 });
+
+  screens.forEach(s => observer.observe(s));
+
+  // Animation switcher
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const anim = btn.dataset.anim;
+      container.className = 'container anim-' + anim;
+      // Re-trigger: scroll to top, reset
+      container.scrollTo({ top: 0 });
+      screens.forEach(s => s.classList.remove('visible'));
+      setTimeout(() => screens[0].classList.add('visible'), 100);
+    });
+  });
+</script>
+</body>
+</html>
