@@ -6,13 +6,13 @@ import Footer from '../components/Footer.astro';
 <Layout title="Илья Кадацкий | E-commerce Executive">
 	<main class="fullpage-container" id="fullpage">
 
-		<!-- Экран 1: Вершина айсберга -->
+		<!-- Экран 1: Вершина айсберга (светлый — на поверхности) -->
 		<section class="screen screen-1" data-index="0">
-			<div class="glass-panel">
+			<div class="glass-panel glass-panel--light">
 				<h1>Это главный экран личного сайта Ильи Кадацкого</h1>
 				<p class="annotation">Здесь пользователь увидит визуализацию клиентского опыта в екоме в виде иллюстрации, но наша цель: показать то, что от пользователя скрыто. Сложные и современные процессы, технологии, которые сейчас и формируют электронную коммерцию...</p>
 				<div class="nav-buttons">
-					<button class="nav-btn dive-btn" data-target="4" aria-label="Погрузиться на дно">Погрузиться ↓</button>
+					<button class="nav-btn dive-btn" data-target="1">Погрузиться ↓</button>
 				</div>
 			</div>
 			<div class="floor-indicator">01 / 05</div>
@@ -21,9 +21,12 @@ import Footer from '../components/Footer.astro';
 		<!-- Экран 2: Продукт и Контент -->
 		<section class="screen screen-2" data-index="1">
 			<div class="glass-panel">
-				<span class="floor-label">Этаж −1</span>
 				<h2>Как театр начинается с вешалки, так и еком начинается с продукта...</h2>
 				<p class="annotation">Можно сколько угодно спорить о конверсионности тех или иных интерфейсов, качестве трафика и&nbsp;тд и&nbsp;тд. Но основной успех всё ещё определяет его величество спрос: на сколько ваш продукт в него попадает, на сколько он конкурентно способен? А диджитал-контент&nbsp;— это виртуальная аватара вашего продукта, которая связывает ожидания клиента с реальностью...</p>
+				<div class="nav-buttons">
+					<button class="nav-btn surface-btn" data-target="0">Всплыть ↑</button>
+					<button class="nav-btn dive-btn" data-target="2">Погрузиться ↓</button>
+				</div>
 			</div>
 			<div class="floor-indicator">02 / 05</div>
 		</section>
@@ -31,9 +34,12 @@ import Footer from '../components/Footer.astro';
 		<!-- Экран 3: Поддержка и Коммуникации -->
 		<section class="screen screen-3" data-index="2">
 			<div class="glass-panel">
-				<span class="floor-label">Этаж −2</span>
 				<h2>Поддержка и клиентский сервис, коммуникации</h2>
 				<p class="annotation">Какой еком обходится сейчас без этого? Забавно, мы так увлеклись автоматизацией и оптимизацией коммуникаций, что люди начинают скучать по старым-добрым операторам колл-центра из плоти и крови... При условии, что их не превратили регламентами и тон оф войсами в биороботов, конечно.</p>
+				<div class="nav-buttons">
+					<button class="nav-btn surface-btn" data-target="1">Всплыть ↑</button>
+					<button class="nav-btn dive-btn" data-target="3">Погрузиться ↓</button>
+				</div>
 			</div>
 			<div class="floor-indicator">03 / 05</div>
 		</section>
@@ -41,9 +47,12 @@ import Footer from '../components/Footer.astro';
 		<!-- Экран 4: Логистика и Доставка -->
 		<section class="screen screen-4" data-index="3">
 			<div class="glass-panel">
-				<span class="floor-label">Этаж −3</span>
 				<h2>Складская логистика и доставка</h2>
 				<p class="annotation">Куда без неё? Товар должен быть в наличии, в нужном цвете, нужном размере, он должен быть красиво упакован... А привезти его должны были ещё вчера. Все мы сами создали у клиентов завышенные ожидания от этого этапа покупки, нам и пожинать плоды...</p>
+				<div class="nav-buttons">
+					<button class="nav-btn surface-btn" data-target="2">Всплыть ↑</button>
+					<button class="nav-btn dive-btn" data-target="4">Погрузиться ↓</button>
+				</div>
 			</div>
 			<div class="floor-indicator">04 / 05</div>
 		</section>
@@ -51,11 +60,10 @@ import Footer from '../components/Footer.astro';
 		<!-- Экран 5: ИИ-Ядро и Разработка -->
 		<section class="screen screen-5" data-index="4">
 			<div class="glass-panel reactor-panel">
-				<span class="floor-label floor-label--reactor">Этаж −4 · Core</span>
 				<h2>Ох, а вот мы добрались и до айти...</h2>
 				<p class="annotation">То, что раньше было долго, дорого, сложно и непонятно, сегодня стремительно упрощается, ускоряется, становится дешевле. Энтерпрайз-разработка должна умереть и переродиться, не так ли? Потому здесь мы видим манящее мерцание этого ИИ-реактора: средоточие и источник наших вычислительных мощностей...</p>
 				<div class="nav-buttons">
-					<button class="nav-btn surface-btn" data-target="0" aria-label="Всплыть на поверхность">Всплыть ↑</button>
+					<button class="nav-btn surface-btn" data-target="3">Всплыть ↑</button>
 				</div>
 			</div>
 			<div class="floor-indicator">05 / 05</div>
@@ -90,6 +98,15 @@ import Footer from '../components/Footer.astro';
 		-webkit-overflow-scrolling: touch;
 	}
 
+	/* Hide scrollbar but keep scroll functionality */
+	.fullpage-container::-webkit-scrollbar {
+		display: none;
+	}
+	.fullpage-container {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+
 	/* ===== INDIVIDUAL SCREENS ===== */
 	.screen {
 		width: 100%;
@@ -101,41 +118,46 @@ import Footer from '../components/Footer.astro';
 		justify-content: center;
 		position: relative;
 		overflow: hidden;
-		transition: background-color 0.6s ease;
 	}
 
-	/* ===== SCREEN BACKGROUNDS (temporary — will be replaced with illustrations) ===== */
+	/* ===== SCREEN BACKGROUNDS ===== */
+	/* Экран 1: Поверхность — светлый, небо + вода */
 	.screen-1 {
 		background: linear-gradient(180deg, 
-			#0a1628 0%, 
-			#0d2137 40%, 
-			#0f2b4a 100%);
+			#1e3a5f 0%, 
+			#1a4a6e 30%,
+			#1565a0 60%, 
+			#0d4a7a 100%);
 	}
 
+	/* Экран 2: Первый подводный уровень */
 	.screen-2 {
 		background: linear-gradient(180deg, 
-			#0f2b4a 0%, 
-			#0a2a3f 40%, 
-			#082838 100%);
+			#0d4a7a 0%, 
+			#0a3d68 40%, 
+			#083256 100%);
 	}
 
+	/* Экран 3: Глубже */
 	.screen-3 {
 		background: linear-gradient(180deg, 
-			#082838 0%, 
-			#071e30 40%, 
-			#061828 100%);
+			#083256 0%, 
+			#062848 40%, 
+			#051e3a 100%);
 	}
 
+	/* Экран 4: Ещё глубже */
 	.screen-4 {
 		background: linear-gradient(180deg, 
-			#061828 0%, 
-			#051420 40%, 
-			#040e18 100%);
+			#051e3a 0%, 
+			#04162c 40%, 
+			#030e1e 100%);
 	}
 
+	/* Экран 5: Дно — самый тёмный, с фиолетовым свечением реактора */
 	.screen-5 {
 		background: linear-gradient(180deg, 
-			#040e18 0%, 
+			#030e1e 0%, 
 			#08051a 40%, 
 			#0d0520 100%);
 	}
@@ -144,7 +166,6 @@ import Footer from '../components/Footer.astro';
 		background: linear-gradient(180deg, 
 			#0d0520 0%, 
 			#030712 100%);
-		scroll-snap-align: start;
 	}
 
 	/* ===== GLASS PANELS ===== */
@@ -157,6 +178,11 @@ import Footer from '../components/Footer.astro';
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		border-radius: 24px;
 		text-align: center;
+	}
+
+	.glass-panel--light {
+		background: rgba(255, 255, 255, 0.07);
+		border-color: rgba(255, 255, 255, 0.12);
 	}
 
 	.reactor-panel {
@@ -195,24 +221,6 @@ import Footer from '../components/Footer.astro';
 		margin: 0 auto;
 	}
 
-	.floor-label {
-		display: inline-block;
-		font-size: 0.75rem;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 3px;
-		color: var(--accent-cyan, #06b6d4);
-		margin-bottom: 1.5rem;
-		padding: 0.4rem 1rem;
-		border: 1px solid rgba(6, 182, 212, 0.3);
-		border-radius: 20px;
-	}
-
-	.floor-label--reactor {
-		color: var(--accent-neon, #8b5cf6);
-		border-color: rgba(139, 92, 246, 0.3);
-	}
-
 	/* ===== FLOOR INDICATOR (bottom-right) ===== */
 	.floor-indicator {
 		position: absolute;
@@ -228,13 +236,17 @@ import Footer from '../components/Footer.astro';
 	/* ===== NAVIGATION BUTTONS ===== */
 	.nav-buttons {
 		margin-top: 2rem;
+		display: flex;
+		gap: 1rem;
+		justify-content: center;
+		flex-wrap: wrap;
 	}
 
 	.nav-btn {
-		padding: 0.8rem 2rem;
+		padding: 0.7rem 1.8rem;
 		border-radius: 30px;
 		font-weight: 600;
-		font-size: 0.95rem;
+		font-size: 0.9rem;
 		cursor: pointer;
 		font-family: 'Outfit', sans-serif;
 		transition: all 0.3s ease;
@@ -253,14 +265,15 @@ import Footer from '../components/Footer.astro';
 	}
 
 	.surface-btn {
-		background: rgba(139, 92, 246, 0.15);
-		border: 1px solid rgba(139, 92, 246, 0.4);
-		color: var(--accent-neon, #8b5cf6);
+		background: rgba(255, 255, 255, 0.06);
+		border: 1px solid rgba(255, 255, 255, 0.15);
+		color: rgba(255, 255, 255, 0.6);
 	}
 
 	.surface-btn:hover {
-		background: rgba(139, 92, 246, 0.25);
-		box-shadow: 0 0 30px rgba(139, 92, 246, 0.2);
+		background: rgba(255, 255, 255, 0.1);
+		color: rgba(255, 255, 255, 0.9);
+		box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
 	}
 
 	/* ===== DOT NAVIGATION ===== */
@@ -325,6 +338,11 @@ import Footer from '../components/Footer.astro';
 			bottom: 1rem;
 			right: 1rem;
 			font-size: 0.7rem;
+		}
+
+		.nav-buttons {
+			flex-direction: column;
+			align-items: center;
 		}
 	}
 </style>
