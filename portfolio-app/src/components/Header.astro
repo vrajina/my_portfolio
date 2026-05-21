@@ -6,7 +6,7 @@
       <img src="/logo.png" alt="KADATSKY" class="logo-img" />
     </a>
   </div>
-  <nav class="main-nav">
+  <nav class="main-nav" id="main-nav">
     <ul>
       <li><a href="/about">Обо мне</a></li>
       <li><a href="/services">Услуги</a></li>
@@ -15,6 +15,11 @@
       <li><a href="/contacts" class="btn-outline">Контакты</a></li>
     </ul>
   </nav>
+  <button class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
 </header>
 
 <style>
@@ -73,14 +78,103 @@
     box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
   }
 
+  /* ===== BURGER ===== */
+  .burger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 32px;
+    height: 32px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    z-index: 1010;
+  }
+  .burger span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: var(--text-secondary, #8892a8);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    transform-origin: center;
+  }
+  /* Анимация крестика */
+  .burger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+  .burger.active span:nth-child(2) {
+    opacity: 0;
+  }
+  .burger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+  }
+
+  /* ===== MOBILE ===== */
   @media (max-width: 900px) {
     .site-header {
-      padding: 1rem;
+      padding: 0.75rem 1.25rem;
+    }
+    .burger {
+      display: flex;
     }
     .main-nav {
-      position: static;
-      transform: none;
-      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: rgba(8, 8, 12, 0.97);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: translateX(100%);
+      opacity: 0;
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+      z-index: 1005;
+    }
+    .main-nav.open {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    .main-nav ul {
+      flex-direction: column;
+      gap: 2.5rem;
+      text-align: center;
+    }
+    .main-nav a {
+      font-size: 1.4rem;
+      letter-spacing: 2px;
     }
   }
 </style>
+
+<script>
+  function initBurger() {
+    const burger = document.getElementById('burger');
+    const nav = document.getElementById('main-nav');
+    if (!burger || !nav) return;
+
+    burger.addEventListener('click', () => {
+      const isOpen = nav.classList.toggle('open');
+      burger.classList.toggle('active');
+      burger.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    // Закрываем меню при клике на ссылку
+    nav.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        nav.classList.remove('open');
+        burger.classList.remove('active');
+        burger.setAttribute('aria-expanded', 'false');
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initBurger);
+  document.addEventListener('astro:page-load', initBurger);
+</script>
