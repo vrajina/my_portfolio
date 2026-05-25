@@ -27,6 +27,9 @@ const { title } = Astro.props;
 
 <style is:global>
 	html, body {
+		height: 100%;
+	}
+	body:has(.fullpage-container) {
 		overflow: hidden;
 		height: 100vh;
 	}
