@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Outfit:wght@400;500;600;700&family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;600;700&display=swap');
 
 :root {
   /* Фон и Поверхности */
@@ -31,7 +31,7 @@
 }
 
 body {
-  font-family: 'Rajdhani', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.6;
