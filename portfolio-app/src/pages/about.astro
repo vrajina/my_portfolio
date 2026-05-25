@@ -17,8 +17,8 @@ import Footer from '../components/Footer.astro';
 			<div class="hero-text">
 				<span class="hero-label">Обо мне</span>
 				<h1>Илья Кадацкий</h1>
-				<p class="hero-role">E-commerce Executive</p>
-				<p class="hero-intro">18&nbsp;лет в&nbsp;диджитале. От&nbsp;первых сайтов в&nbsp;Самаре&nbsp;— до&nbsp;управления e-commerce командами в&nbsp;20+ человек. Строю онлайн-торговлю, которая работает.</p>
+				<p class="hero-role">Руководитель электронной торговли</p>
+				<p class="hero-intro"><strong>18</strong>&nbsp;лет в&nbsp;диджитале и&nbsp;электронной торговле. От&nbsp;создания первых сайтов&nbsp;— до&nbsp;управления федеральными e-commerce проектами и&nbsp;командами в&nbsp;несколько десятков человек. Строю онлайн-торговлю, которая работает.</p>
 				<div class="hero-contacts">
 					<a href="https://t.me/ivkadatsky" target="_blank" class="contact-link">Telegram</a>
 					<a href="mailto:ilya.kadatsky@yandex.ru" class="contact-link">Email</a>
@@ -26,23 +26,23 @@ import Footer from '../components/Footer.astro';
 			</div>
 		</section>
 
-		<!-- Ключевые цифры -->
+		<!-- Ключевые тезисы -->
 		<section class="about-stats">
 			<div class="stat">
 				<span class="stat-number">18+</span>
-				<span class="stat-label">лет в&nbsp;диджитале</span>
+				<span class="stat-label">лет в&nbsp;диджитале и&nbsp;e-commerce</span>
 			</div>
 			<div class="stat">
-				<span class="stat-number">6</span>
-				<span class="stat-label">компаний, где строил e-com</span>
+				<span class="stat-number">10+</span>
+				<span class="stat-label">компаний, где построил электронную торговлю</span>
 			</div>
 			<div class="stat">
-				<span class="stat-number">20+</span>
-				<span class="stat-label">человек в&nbsp;команде</span>
+				<span class="stat-number">∞→1</span>
+				<span class="stat-label">от&nbsp;аутсорса к&nbsp;полному инхаусу</span>
 			</div>
 			<div class="stat">
-				<span class="stat-number">100+</span>
-				<span class="stat-label">магазинов в&nbsp;омниканалке</span>
+				<span class="stat-number">ИИ</span>
+				<span class="stat-label">пионер AI-оркестра в&nbsp;enterprise</span>
 			</div>
 		</section>
 
@@ -188,22 +188,24 @@ import Footer from '../components/Footer.astro';
 	.about-hero {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		min-height: 85vh;
-		align-items: center;
-		gap: 4rem;
-		padding: 4rem 6rem;
+		min-height: calc(100vh - 70px);
 		background: linear-gradient(135deg, #0a0e1a 0%, #0d1a2e 50%, #0a1628 100%);
 	}
 	.hero-photo {
-		display: flex;
-		justify-content: center;
+		position: relative;
+		overflow: hidden;
 	}
 	.hero-photo img {
 		width: 100%;
-		max-width: 420px;
-		border-radius: 20px;
-		border: 1px solid rgba(6, 182, 212, 0.15);
-		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(6, 182, 212, 0.05);
+		height: 100%;
+		object-fit: cover;
+		object-position: center top;
+		display: block;
+	}
+	.hero-text {
+		display: flex;
+		align-items: center;
+		padding: 4rem 3rem;
 	}
 	.hero-label {
 		display: inline-block;
@@ -237,6 +239,10 @@ import Footer from '../components/Footer.astro';
 		margin-bottom: 2rem;
 		max-width: 480px;
 	}
+	.hero-intro strong {
+		color: var(--text-primary, #e2e8f0);
+		font-weight: 700;
+	}
 	.hero-contacts {
 		display: flex;
 		gap: 1rem;
@@ -262,8 +268,8 @@ import Footer from '../components/Footer.astro';
 	.about-stats {
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
-		gap: 2rem;
-		padding: 3.5rem 6rem;
+		gap: 2.5rem;
+		padding: 4.5rem 6rem;
 		background: rgba(6, 182, 212, 0.03);
 		border-top: 1px solid rgba(6, 182, 212, 0.06);
 		border-bottom: 1px solid rgba(6, 182, 212, 0.06);
@@ -274,16 +280,16 @@ import Footer from '../components/Footer.astro';
 	.stat-number {
 		display: block;
 		font-family: 'Outfit', sans-serif;
-		font-size: 2.5rem;
+		font-size: 3rem;
 		font-weight: 700;
 		color: var(--accent-cyan, #06b6d4);
 		line-height: 1;
-		margin-bottom: 0.5rem;
+		margin-bottom: 0.75rem;
 	}
 	.stat-label {
-		font-size: 0.85rem;
+		font-size: 0.95rem;
 		color: #8892a8;
-		line-height: 1.4;
+		line-height: 1.5;
 	}
 
 	/* ===== TIMELINE ===== */
@@ -517,13 +523,14 @@ import Footer from '../components/Footer.astro';
 	@media (max-width: 900px) {
 		.about-hero {
 			grid-template-columns: 1fr;
-			padding: 3rem 1.5rem;
-			gap: 2rem;
 			min-height: auto;
-			text-align: center;
 		}
-		.hero-photo img {
-			max-width: 280px;
+		.hero-photo {
+			max-height: 50vh;
+		}
+		.hero-text {
+			padding: 2rem 1.5rem;
+			text-align: center;
 		}
 		.hero-intro {
 			margin-left: auto;
@@ -535,6 +542,9 @@ import Footer from '../components/Footer.astro';
 		.about-stats {
 			grid-template-columns: repeat(2, 1fr);
 			padding: 2.5rem 1.5rem;
+		}
+		.stat-number {
+			font-size: 2.2rem;
 		}
 		.about-timeline,
 		.about-skills,
