@@ -331,24 +331,65 @@ import Footer from '../components/Footer.astro';
 		height: 6px;
 	}
 
-	/* ===== RESPONSIVE ===== */
+	/* ===== RESPONSIVE: мобильная версия как в базовой ===== */
 	@media (max-width: 900px) {
-		.screen-overlay {
-			padding: 5rem 1rem 2rem;
-			align-items: flex-end;
+		/* Переключаем на стек: картинка сверху, текст снизу */
+		.screen {
+			display: grid;
+			grid-template-columns: 1fr;
+			grid-template-rows: 55vh 45vh;
 		}
+
+		/* Фон становится обычным блоком в потоке */
+		.screen-bg {
+			position: relative;
+			grid-row: 1;
+		}
+
+		/* Overlay становится текстовой панелью */
+		.screen-overlay {
+			position: relative;
+			grid-row: 2;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 1.5rem;
+			background: var(--bg-primary, #0a0e1a);
+		}
+
+		/* Панель на всю ширину, без стекла */
+		.panel, .panel--reactor {
+			width: 100%;
+			max-width: 100%;
+			min-width: unset;
+			background: transparent;
+			border: none;
+			border-radius: 0;
+			padding: 0;
+		}
+
 		.panel-right, .panel-left {
 			justify-content: center;
 		}
-		.panel {
-			width: 100%;
-			max-width: none;
-			min-width: unset;
-			background: rgba(10, 14, 26, 0.8);
-			border-radius: 12px;
+
+		/* Фоновые цвета текстовых панелей по этажам */
+		.screen-1 .screen-overlay { background: linear-gradient(180deg, rgba(13, 74, 122, 0.95) 0%, rgba(13, 74, 122, 0.7) 100%); }
+		.screen-2 .screen-overlay { background: linear-gradient(180deg, rgba(8, 50, 86, 0.95) 0%, rgba(8, 50, 86, 0.7) 100%); }
+		.screen-3 .screen-overlay { background: linear-gradient(180deg, rgba(5, 30, 58, 0.95) 0%, rgba(5, 30, 58, 0.7) 100%); }
+		.screen-4 .screen-overlay { background: linear-gradient(180deg, rgba(3, 14, 30, 0.95) 0%, rgba(3, 14, 30, 0.7) 100%); }
+		.screen-5 .screen-overlay { background: linear-gradient(180deg, rgba(13, 5, 32, 0.95) 0%, rgba(13, 5, 32, 0.7) 100%); }
+
+		.text-inner {
+			max-width: 100%;
 		}
+
 		.dot-nav {
-			display: none;
+			right: 0.5rem;
+			gap: 8px;
+		}
+		.dot {
+			width: 6px;
+			height: 6px;
 		}
 	}
 </style>
