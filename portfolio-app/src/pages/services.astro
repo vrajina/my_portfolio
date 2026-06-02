@@ -1,0 +1,90 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="Услуги — Илья Кадацкий | E-commerce Executive" description="Консалтинг, аудит и управление e-commerce проектами. Стратегия, маркетинг, логистика, IT-архитектура — полный цикл электронной торговли.">
+	<main class="stub-page">
+		<section class="stub-hero">
+			<span class="stub-tag">Раздел в&nbsp;разработке</span>
+			<h1>Услуги</h1>
+			<p class="stub-desc">Этот раздел скоро появится. Здесь будет информация об&nbsp;услугах: стратегический консалтинг, аудит e-commerce, построение команд и&nbsp;процессов, IT-архитектура и&nbsp;интеграция ИИ в&nbsp;бизнес-процессы.</p>
+			<div class="stub-actions">
+				<a href="/" class="stub-btn">← На&nbsp;главную</a>
+				<a href="mailto:ilya.kadatsky@yandex.ru" class="stub-btn stub-btn--accent">Написать</a>
+			</div>
+		</section>
+		<Footer />
+	</main>
+</Layout>
+
+<style>
+	.stub-page {
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+	}
+	.stub-hero {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+		padding: 8rem 2rem 4rem;
+		max-width: 640px;
+		margin: 0 auto;
+	}
+	.stub-tag {
+		font-family: 'Outfit', sans-serif;
+		font-size: 0.7rem;
+		font-weight: 600;
+		letter-spacing: 3px;
+		text-transform: uppercase;
+		color: var(--neon-cyan);
+		border: 1px solid rgba(0, 240, 255, 0.2);
+		padding: 0.4rem 1rem;
+		border-radius: 20px;
+		margin-bottom: 2rem;
+	}
+	h1 {
+		font-family: 'Outfit', sans-serif;
+		font-size: clamp(2rem, 4vw, 3rem);
+		color: var(--text-primary);
+		margin-bottom: 1.5rem;
+	}
+	.stub-desc {
+		font-size: 1rem;
+		line-height: 1.7;
+		color: var(--text-secondary);
+		margin-bottom: 2.5rem;
+	}
+	.stub-actions {
+		display: flex;
+		gap: 1rem;
+	}
+	.stub-btn {
+		font-family: 'Rajdhani', sans-serif;
+		font-weight: 600;
+		font-size: 0.9rem;
+		padding: 0.6rem 1.5rem;
+		border: 1px solid rgba(255, 255, 255, 0.15);
+		border-radius: 6px;
+		color: var(--text-primary);
+		text-decoration: none;
+		transition: all 0.3s ease;
+		letter-spacing: 1px;
+	}
+	.stub-btn:hover {
+		background: rgba(255, 255, 255, 0.06);
+		text-shadow: none;
+	}
+	.stub-btn--accent {
+		border-color: var(--neon-cyan);
+		color: var(--neon-cyan);
+	}
+	.stub-btn--accent:hover {
+		background: rgba(0, 240, 255, 0.08);
+		color: var(--neon-cyan);
+	}
+</style>

@@ -1,0 +1,98 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="Контакты — Илья Кадацкий | E-commerce Executive" description="Связаться с Ильёй Кадацким: Telegram, email. Консультации по e-commerce, диджитал-стратегии и управлению проектами.">
+	<main class="stub-page">
+		<section class="stub-hero">
+			<h1>Контакты</h1>
+			<p class="stub-desc">Готов обсудить ваш проект, консультацию или&nbsp;сотрудничество.</p>
+			<div class="contact-cards">
+				<a href="https://t.me/ivkadatsky" target="_blank" class="contact-card">
+					<span class="contact-icon">💬</span>
+					<span class="contact-label">Telegram</span>
+					<span class="contact-value">@ivkadatsky</span>
+				</a>
+				<a href="mailto:ilya.kadatsky@yandex.ru" class="contact-card">
+					<span class="contact-icon">📧</span>
+					<span class="contact-label">Email</span>
+					<span class="contact-value">ilya.kadatsky@yandex.ru</span>
+				</a>
+			</div>
+		</section>
+		<Footer />
+	</main>
+</Layout>
+
+<style>
+	.stub-page {
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+	}
+	.stub-hero {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+		padding: 8rem 2rem 4rem;
+		max-width: 700px;
+		margin: 0 auto;
+	}
+	h1 {
+		font-family: 'Outfit', sans-serif;
+		font-size: clamp(2rem, 4vw, 3rem);
+		color: var(--text-primary);
+		margin-bottom: 1rem;
+	}
+	.stub-desc {
+		font-size: 1.05rem;
+		line-height: 1.7;
+		color: var(--text-secondary);
+		margin-bottom: 3rem;
+	}
+	.contact-cards {
+		display: flex;
+		gap: 1.5rem;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+	.contact-card {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 2rem 2.5rem;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 16px;
+		background: rgba(255, 255, 255, 0.02);
+		text-decoration: none;
+		transition: all 0.3s ease;
+		min-width: 200px;
+	}
+	.contact-card:hover {
+		background: rgba(0, 240, 255, 0.04);
+		border-color: rgba(0, 240, 255, 0.2);
+		text-shadow: none;
+		transform: translateY(-2px);
+	}
+	.contact-icon {
+		font-size: 2rem;
+	}
+	.contact-label {
+		font-family: 'Outfit', sans-serif;
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 2px;
+		text-transform: uppercase;
+		color: var(--text-secondary);
+	}
+	.contact-value {
+		font-family: 'Inter', sans-serif;
+		font-size: 0.95rem;
+		color: var(--neon-cyan);
+	}
+</style>
