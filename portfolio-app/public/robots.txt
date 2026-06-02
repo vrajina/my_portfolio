@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /v1
+Disallow: /v3
+
+Sitemap: https://my-portfolio-seven-rho-enkotkigkq.vercel.app/sitemap-index.xml
