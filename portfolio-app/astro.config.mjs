@@ -7,7 +7,7 @@ export default defineConfig({
   site: 'https://my-portfolio-seven-rho-enkotkigkq.vercel.app',
   integrations: [
     sitemap({
-      filter: (page) => !page.includes('/v1') && !page.includes('/v3'),
+      filter: (page) => !page.includes('/v1') && !page.includes('/v3') && !page.includes('/draft-index'),
     }),
   ],
 });
