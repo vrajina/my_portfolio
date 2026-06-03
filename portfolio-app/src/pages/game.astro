@@ -2,14 +2,14 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Ecom Catcher — Мини-игра | Кадацкий" description="Аркадная мини-игра: лови полезные e-commerce термины и уклоняйся от бюрократии!">
+<Layout title="Ecom Catcher — Мини-игра | Кадацкий" description="Аркадная мини-игра: лови полезные e-commerce термины и уклоняйся от вредных! Проверь свои знания матчасти.">
 	<main class="game-page">
-		<div class="game-container" id="gameContainer">
+		<div class="game-wrapper">
 			<canvas id="gameCanvas"></canvas>
 		</div>
 		<div class="game-footer">
 			<a href="/" class="back-link">← На главную</a>
-			<span class="game-hint">Стрелки ← → или A/D для управления • Space для старта</span>
+			<span class="game-hint">← → или A/D • Space для старта</span>
 		</div>
 	</main>
 </Layout>
@@ -19,45 +19,58 @@ import Layout from '../layouts/Layout.astro';
 		min-height: 100vh;
 		display: flex;
 		flex-direction: column;
+		align-items: center;
 		background: #0a0e1a;
+		padding-top: 64px;
 	}
-	.game-container {
-		flex: 1;
+	.game-wrapper {
+		flex: 0 0 auto;
+		width: 400px;
+		height: 650px;
 		position: relative;
-		margin-top: 64px; /* header height */
+		border: 2px solid rgba(0, 240, 255, 0.15);
+		border-radius: 8px;
+		overflow: hidden;
+		margin: 1rem 0;
+		box-shadow: 0 0 40px rgba(0, 240, 255, 0.05);
+		image-rendering: pixelated;
 	}
 	#gameCanvas {
 		display: block;
 		width: 100%;
 		height: 100%;
-		position: absolute;
-		inset: 0;
-		cursor: default;
+		image-rendering: pixelated;
+		image-rendering: crisp-edges;
 	}
 	.game-footer {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 0.75rem 1.5rem;
-		background: rgba(10, 14, 26, 0.95);
-		border-top: 1px solid rgba(0, 240, 255, 0.08);
-		z-index: 10;
+		width: 400px;
+		padding: 0.5rem 0;
 	}
 	.back-link {
 		font-family: 'Outfit', sans-serif;
-		font-size: 0.85rem;
+		font-size: 0.8rem;
 		color: var(--neon-cyan, #00f0ff);
 		text-decoration: none;
 		transition: opacity 0.2s;
 	}
 	.back-link:hover { opacity: 0.7; }
 	.game-hint {
-		font-size: 0.75rem;
-		color: rgba(255, 255, 255, 0.3);
+		font-size: 0.7rem;
+		color: rgba(255, 255, 255, 0.25);
 		font-family: 'Inter', sans-serif;
 	}
-	@media (max-width: 600px) {
-		.game-hint { display: none; }
+	@media (max-width: 440px) {
+		.game-wrapper, .game-footer {
+			width: 100%;
+			border-radius: 0;
+			border-left: none;
+			border-right: none;
+		}
+		.game-page { padding-top: 56px; }
+		.game-footer { padding: 0.5rem 1rem; }
 	}
 </style>
 

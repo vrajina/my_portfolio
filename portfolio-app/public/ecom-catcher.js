@@ -1,151 +1,218 @@
-// Ecom Catcher — Mini-game engine
+// Ecom Catcher v2 — Pixel art knowledge quiz arcade
 (function () {
   'use strict';
 
+  // === TERMS ===
+  const GOOD = [
+    'PIM','SEO','GEO','AI','OMS','CMS','CRM','ERP','CDP','WMS',
+    'KPI','LTV','ROAS','A/B','UX','API','BI','NPS','CTR','CR'
+  ];
+  const BAD = [
+    'ASAP','Legacy','TD','WISMO','SLA Breach','OOS','LTV Drop',
+    'SPAM','DDoS','404','Downtime','Churn','Bug','Blocker',
+    'Scope Creep','FUD'
+  ];
+  const GOOD_PTS = 10;
+  const BAD_PTS = -15;
+  const MISS_GOOD_PTS = -5;
+
   // === CONFIG ===
-  const GOOD_TERMS = [
-    { text: 'PIM', pts: 10, debuff: 'slow', debuffMsg: 'Контент в хаосе!' },
-    { text: 'CRM', pts: 10, debuff: 'shake', debuffMsg: 'Клиенты уходят!' },
-    { text: 'ROAS', pts: 15, debuff: 'burn', debuffMsg: 'Бюджет горит!' },
-    { text: 'A/B-тест', pts: 10, debuff: null },
-    { text: 'Юнит-экономика', pts: 20, debuff: 'slow', debuffMsg: 'Убытки!' },
-    { text: 'Омниканальность', pts: 15, debuff: null },
-    { text: 'LTV', pts: 10, debuff: null },
-    { text: 'Фулфилмент', pts: 10, debuff: 'slow', debuffMsg: 'Товар застрял!' },
-    { text: 'SEO', pts: 10, debuff: 'slow', debuffMsg: 'Трафик падает!' },
-    { text: 'UX-аудит', pts: 15, debuff: null },
-  ];
-  const BAD_TERMS = [
-    { text: 'Бюрократия', pts: -15, debuff: 'slow', debuffMsg: 'Бюрократия!' },
-    { text: 'Легаси', pts: -10, debuff: 'invert', debuffMsg: 'Инверсия!' },
-    { text: 'Аутсорс по дешёвке', pts: -20, debuff: 'blur', debuffMsg: 'Всё мутно!' },
-    { text: '«Не мой KPI»', pts: -10, debuff: 'shrink', debuffMsg: 'Сжатие!' },
-    { text: 'Годовой бэклог', pts: -15, debuff: 'slow', debuffMsg: 'Завал!' },
-    { text: 'Раздутый штат', pts: -10, debuff: 'grow', debuffMsg: 'Раздуло!' },
-  ];
+  const FIELD_W = 400;
+  const FIELD_H = 650;
+  const PLAYER_W = 40;
+  const PLAYER_H = 56;
+  const TERM_H = 28;
+  const TERM_PAD = 12;
+  const GROUND_Y = FIELD_H - 50;
+  const BASE_FALL = 1.2;
+  const FALL_INC = 0.12;
+  const SPAWN_START = 1600;
+  const SPAWN_MIN = 550;
+  const DEBUFF_DUR = 3500;
+  const MAX_LIVES = 3;
+  const LEADERBOARD_SIZE = 10;
+  const PIXEL_FONT = '"Press Start 2P", monospace';
 
-  const COLORS = {
-    bg: '#0a0e1a',
-    cyan: '#00f0ff',
-    purple: '#c084fc',
-    good: '#00ff88',
-    bad: '#ff4466',
-    text: '#e0e6f0',
-    dim: 'rgba(255,255,255,0.4)',
-    hudBg: 'rgba(10,14,26,0.85)',
-  };
+  // Debuff pool for bad catches
+  const DEBUFFS = ['slow','invert','blur','shake','grow'];
 
-  const PLAYER_W = 48, PLAYER_H = 56;
-  const TERM_H = 32;
-  const BASE_SPEED = 1.5;
-  const SPEED_INC = 0.15; // per 15s
-  const SPAWN_INTERVAL_START = 1400; // ms
-  const SPAWN_INTERVAL_MIN = 500;
-  const DEBUFF_DURATION = 4000;
+  // === HELPERS ===
+  function rnd(a, b) { return Math.random() * (b - a) + a; }
+  function pickDebuff() { return DEBUFFS[Math.floor(Math.random() * DEBUFFS.length)]; }
 
-  // === GAME CLASS ===
+  // === GAME ===
   class Game {
     constructor(canvas) {
       this.canvas = canvas;
       this.ctx = canvas.getContext('2d');
-      this.state = 'menu'; // menu | playing | over
+      this.dpr = window.devicePixelRatio || 1;
+      this.state = 'loading'; // loading | menu | playing | over | entering_name
       this.score = 0;
-      this.lives = 3;
+      this.lives = MAX_LIVES;
       this.terms = [];
       this.debuffs = {};
+      this.particles = [];
       this.elapsed = 0;
       this.lastSpawn = 0;
-      this.playerX = 0;
+      this.playerX = FIELD_W / 2 - PLAYER_W / 2;
       this.playerW = PLAYER_W;
       this.keys = {};
-      this.highScore = parseInt(localStorage.getItem('ecom_hi') || '0');
-      this.resize();
+      this.nickname = '';
+      this.flashMsg = null;
+      this.flashEnd = 0;
+      this._loadAssets();
       this._bindEvents();
+      this._applySize();
       this._loop(0);
     }
 
-    resize() {
-      const dpr = window.devicePixelRatio || 1;
-      const rect = this.canvas.parentElement.getBoundingClientRect();
-      this.w = rect.width;
-      this.h = rect.height;
-      this.canvas.width = this.w * dpr;
-      this.canvas.height = this.h * dpr;
-      this.canvas.style.width = this.w + 'px';
-      this.canvas.style.height = this.h + 'px';
-      this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      this.groundY = this.h - 60;
-      if (this.state === 'menu') this.playerX = this.w / 2 - PLAYER_W / 2;
+    _loadAssets() {
+      let loaded = 0;
+      const done = () => { loaded++; if (loaded >= 2) this.state = 'menu'; };
+      this.bgImg = new Image(); this.bgImg.onload = done; this.bgImg.onerror = done;
+      this.bgImg.src = '/office-bg.png';
+      this.playerImg = new Image(); this.playerImg.onload = done; this.playerImg.onerror = done;
+      this.playerImg.src = '/manager.png';
+      // Load pixel font
+      const link = document.createElement('link');
+      link.href = 'https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap';
+      link.rel = 'stylesheet';
+      document.head.appendChild(link);
+    }
+
+    _applySize() {
+      this.canvas.width = FIELD_W * this.dpr;
+      this.canvas.height = FIELD_H * this.dpr;
+      this.canvas.style.width = FIELD_W + 'px';
+      this.canvas.style.height = FIELD_H + 'px';
+      this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
     }
 
     _bindEvents() {
-      window.addEventListener('keydown', e => {
+      const kd = e => {
         this.keys[e.key] = true;
-        if (e.key === ' ' || e.key === 'Enter') {
-          if (this.state === 'menu') this.start();
-          else if (this.state === 'over') this.start();
+        if (this.state === 'entering_name') {
+          e.preventDefault();
+          if (e.key === 'Backspace') this.nickname = this.nickname.slice(0, -1);
+          else if (e.key === 'Enter' && this.nickname.length >= 1) this._saveScore();
+          else if (e.key.length === 1 && this.nickname.length < 12) this.nickname += e.key;
+          return;
         }
-      });
-      window.addEventListener('keyup', e => { this.keys[e.key] = false; });
-      window.addEventListener('resize', () => this.resize());
+        if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          if (this.state === 'menu') this._start();
+          else if (this.state === 'over') this._promptName();
+        }
+        if (e.key === 'Escape' && this.state === 'over') { this.state = 'menu'; }
+      };
+      const ku = e => { this.keys[e.key] = false; };
+      window.addEventListener('keydown', kd);
+      window.addEventListener('keyup', ku);
 
       // Touch
-      let touchX = null;
+      let touchStartX = null;
       this.canvas.addEventListener('touchstart', e => {
         e.preventDefault();
-        if (this.state !== 'playing') { this.start(); return; }
-        touchX = e.touches[0].clientX;
+        if (this.state === 'menu') { this._start(); return; }
+        if (this.state === 'over') { this._promptName(); return; }
+        if (this.state !== 'playing') return;
+        touchStartX = e.touches[0].clientX;
       }, { passive: false });
       this.canvas.addEventListener('touchmove', e => {
         e.preventDefault();
-        if (!touchX || this.state !== 'playing') return;
-        const dx = e.touches[0].clientX - touchX;
-        touchX = e.touches[0].clientX;
+        if (this.state !== 'playing' || touchStartX === null) return;
+        const rect = this.canvas.getBoundingClientRect();
+        const scaleX = FIELD_W / rect.width;
+        const dx = (e.touches[0].clientX - touchStartX) * scaleX;
+        touchStartX = e.touches[0].clientX;
         this.playerX += dx;
       }, { passive: false });
-      this.canvas.addEventListener('touchend', () => { touchX = null; });
+      this.canvas.addEventListener('touchend', () => { touchStartX = null; });
+
+      // Click for menu / game over
+      this.canvas.addEventListener('click', e => {
+        if (this.state === 'menu') this._start();
+        else if (this.state === 'over') this._promptName();
+      });
     }
 
-    start() {
+    _start() {
       this.state = 'playing';
       this.score = 0;
-      this.lives = 3;
+      this.lives = MAX_LIVES;
       this.terms = [];
       this.debuffs = {};
+      this.particles = [];
       this.elapsed = 0;
       this.lastSpawn = 0;
-      this.playerX = this.w / 2 - PLAYER_W / 2;
+      this.playerX = FIELD_W / 2 - PLAYER_W / 2;
       this.playerW = PLAYER_W;
+      this.flashMsg = null;
     }
 
-    _speed() { return BASE_SPEED + Math.floor(this.elapsed / 15000) * SPEED_INC; }
-    _spawnInterval() { return Math.max(SPAWN_INTERVAL_MIN, SPAWN_INTERVAL_START - Math.floor(this.elapsed / 15000) * 80); }
+    _promptName() {
+      const lb = this._getLeaderboard();
+      if (lb.length < LEADERBOARD_SIZE || this.score > (lb[lb.length - 1]?.score || 0)) {
+        this.state = 'entering_name';
+        this.nickname = '';
+      } else {
+        this.state = 'menu';
+      }
+    }
+
+    _saveScore() {
+      const lb = this._getLeaderboard();
+      lb.push({ name: this.nickname.trim() || 'Аноним', score: this.score });
+      lb.sort((a, b) => b.score - a.score);
+      if (lb.length > LEADERBOARD_SIZE) lb.length = LEADERBOARD_SIZE;
+      localStorage.setItem('ecom_lb', JSON.stringify(lb));
+      this.state = 'menu';
+    }
+
+    _getLeaderboard() {
+      try { return JSON.parse(localStorage.getItem('ecom_lb') || '[]'); } catch { return []; }
+    }
+
+    _fallSpeed() { return BASE_FALL + Math.floor(this.elapsed / 15000) * FALL_INC; }
+    _spawnInt() { return Math.max(SPAWN_MIN, SPAWN_START - Math.floor(this.elapsed / 15000) * 70); }
 
     _spawnTerm() {
-      const isGood = Math.random() < 0.6;
-      const pool = isGood ? GOOD_TERMS : BAD_TERMS;
-      const tmpl = pool[Math.floor(Math.random() * pool.length)];
-      this.ctx.font = 'bold 14px Inter, sans-serif';
-      const tw = this.ctx.measureText(tmpl.text).width + 24;
-      const x = Math.random() * (this.w - tw);
-      this.terms.push({ ...tmpl, x, y: -TERM_H, w: tw, good: isGood, angle: (Math.random() - 0.5) * 0.08 });
+      const isGood = Math.random() < 0.55;
+      const pool = isGood ? GOOD : BAD;
+      const text = pool[Math.floor(Math.random() * pool.length)];
+      this.ctx.font = '10px ' + PIXEL_FONT;
+      const tw = Math.max(this.ctx.measureText(text).width + TERM_PAD * 2, 50);
+      const x = rnd(4, FIELD_W - tw - 4);
+      this.terms.push({ text, x, y: -TERM_H, w: tw, good: isGood, rot: rnd(-0.06, 0.06) });
     }
 
-    _applyDebuff(type, msg) {
-      this.debuffs[type] = { until: performance.now() + DEBUFF_DURATION, msg };
-      if (type === 'shrink') this.playerW = PLAYER_W * 0.6;
-      if (type === 'grow') this.playerW = PLAYER_W * 1.6;
+    _flash(msg, color) {
+      this.flashMsg = { text: msg, color };
+      this.flashEnd = performance.now() + 1200;
     }
 
-    _hasDebuff(type) {
-      const d = this.debuffs[type];
+    _applyDebuff(type) {
+      this.debuffs[type] = performance.now() + DEBUFF_DUR;
+      if (type === 'grow') this.playerW = PLAYER_W * 1.5;
+    }
+
+    _hasDebuff(t) {
+      const d = this.debuffs[t];
       if (!d) return false;
-      if (performance.now() > d.until) { delete this.debuffs[type]; this._resetSize(); return false; }
+      if (performance.now() > d) {
+        delete this.debuffs[t];
+        if (t === 'grow') this.playerW = PLAYER_W;
+        return false;
+      }
       return true;
     }
 
-    _resetSize() {
-      if (!this.debuffs.shrink && !this.debuffs.grow) this.playerW = PLAYER_W;
+    _addParticles(x, y, color) {
+      for (let i = 0; i < 6; i++) {
+        this.particles.push({
+          x, y, vx: rnd(-2, 2), vy: rnd(-3, -0.5), life: 500, color
+        });
+      }
     }
 
     _update(dt, now) {
@@ -153,294 +220,295 @@
       this.elapsed += dt;
 
       // Player movement
-      let speed = 5;
-      if (this._hasDebuff('slow')) speed = 2.5;
+      let spd = 4.5;
+      if (this._hasDebuff('slow')) spd = 2;
       let dx = 0;
-      if (this.keys['ArrowLeft'] || this.keys['a']) dx = -speed;
-      if (this.keys['ArrowRight'] || this.keys['d']) dx = speed;
+      if (this.keys['ArrowLeft'] || this.keys['a'] || this.keys['A']) dx = -spd;
+      if (this.keys['ArrowRight'] || this.keys['d'] || this.keys['D']) dx = spd;
       if (this._hasDebuff('invert')) dx = -dx;
       this.playerX += dx;
-      this.playerX = Math.max(0, Math.min(this.w - this.playerW, this.playerX));
+      this.playerX = Math.max(0, Math.min(FIELD_W - this.playerW, this.playerX));
 
       // Spawn
-      if (now - this.lastSpawn > this._spawnInterval()) {
-        this._spawnTerm();
-        this.lastSpawn = now;
-      }
+      if (now - this.lastSpawn > this._spawnInt()) { this._spawnTerm(); this.lastSpawn = now; }
 
-      // Move terms
-      const fallSpeed = this._speed();
-      const toRemove = [];
+      // Terms
+      const fs = this._fallSpeed();
+      const rm = [];
       for (let i = 0; i < this.terms.length; i++) {
         const t = this.terms[i];
-        t.y += fallSpeed;
-        t.angle += 0.001;
+        t.y += fs;
 
-        // Collision with player
-        if (t.y + TERM_H >= this.groundY - PLAYER_H && t.y + TERM_H <= this.groundY + 10 &&
+        // Catch
+        if (t.y + TERM_H >= GROUND_Y - PLAYER_H && t.y <= GROUND_Y &&
             t.x + t.w > this.playerX && t.x < this.playerX + this.playerW) {
-          this.score += t.pts;
-          if (!t.good && t.debuff) this._applyDebuff(t.debuff, t.debuffMsg);
-          if (!t.good) this.lives--;
-          this._spawnParticle(t.x + t.w / 2, t.y, t.good);
-          toRemove.push(i);
+          if (t.good) {
+            this.score += GOOD_PTS;
+            this._flash('+' + GOOD_PTS, '#00ff88');
+            this._addParticles(t.x + t.w / 2, t.y, '#00ff88');
+          } else {
+            this.score += BAD_PTS;
+            this.lives--;
+            this._applyDebuff(pickDebuff());
+            this._flash(BAD_PTS + '', '#ff4466');
+            this._addParticles(t.x + t.w / 2, t.y, '#ff4466');
+          }
+          rm.push(i);
           continue;
         }
-
-        // Missed (fell through)
-        if (t.y > this.groundY + 20) {
-          if (t.good && t.debuff) {
-            this._applyDebuff(t.debuff, t.debuffMsg);
+        // Missed
+        if (t.y > GROUND_Y + 30) {
+          if (t.good) {
+            this.score += MISS_GOOD_PTS;
             this.lives--;
+            this._flash('Пропуск! ' + MISS_GOOD_PTS, '#ffaa00');
           }
-          toRemove.push(i);
+          rm.push(i);
         }
       }
-      for (let i = toRemove.length - 1; i >= 0; i--) this.terms.splice(toRemove[i], 1);
+      for (let i = rm.length - 1; i >= 0; i--) this.terms.splice(rm[i], 1);
 
       // Particles
-      if (this.particles) {
-        for (let i = this.particles.length - 1; i >= 0; i--) {
-          const p = this.particles[i];
-          p.y += p.vy; p.x += p.vx; p.life -= dt;
-          if (p.life <= 0) this.particles.splice(i, 1);
-        }
+      for (let i = this.particles.length - 1; i >= 0; i--) {
+        const p = this.particles[i];
+        p.x += p.vx; p.y += p.vy; p.vy += 0.1; p.life -= dt;
+        if (p.life <= 0) this.particles.splice(i, 1);
       }
 
       // Clean debuffs
       for (const k of Object.keys(this.debuffs)) this._hasDebuff(k);
 
-      if (this.lives <= 0) {
-        this.lives = 0;
-        this.state = 'over';
-        if (this.score > this.highScore) {
-          this.highScore = this.score;
-          localStorage.setItem('ecom_hi', String(this.score));
-        }
-      }
+      // Flash timeout
+      if (this.flashMsg && now > this.flashEnd) this.flashMsg = null;
+
+      if (this.lives <= 0) { this.lives = 0; this.state = 'over'; }
     }
 
-    _spawnParticle(x, y, good) {
-      if (!this.particles) this.particles = [];
-      for (let i = 0; i < 8; i++) {
-        this.particles.push({
-          x, y, vx: (Math.random() - 0.5) * 3, vy: -Math.random() * 3,
-          life: 600, color: good ? COLORS.good : COLORS.bad
-        });
-      }
-    }
-
-    _draw() {
-      const ctx = this.ctx;
+    // === DRAW ===
+    _draw(now) {
+      const c = this.ctx;
       // BG
-      ctx.fillStyle = COLORS.bg;
-      ctx.fillRect(0, 0, this.w, this.h);
+      if (this.bgImg.complete && this.bgImg.naturalWidth) {
+        c.drawImage(this.bgImg, 0, 0, FIELD_W, FIELD_H);
+        c.fillStyle = 'rgba(10,14,26,0.55)';
+        c.fillRect(0, 0, FIELD_W, FIELD_H);
+      } else {
+        c.fillStyle = '#0a0e1a';
+        c.fillRect(0, 0, FIELD_W, FIELD_H);
+      }
 
-      // Grid lines (subtle)
-      ctx.strokeStyle = 'rgba(0,240,255,0.03)';
-      ctx.lineWidth = 1;
-      for (let y = 0; y < this.h; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(this.w, y); ctx.stroke(); }
-      for (let x = 0; x < this.w; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, this.h); ctx.stroke(); }
+      // Debuff FX
+      if (this._hasDebuff('blur')) { c.fillStyle = 'rgba(80,40,40,0.2)'; c.fillRect(0, 0, FIELD_W, FIELD_H); }
+      if (this._hasDebuff('shake')) { c.save(); c.translate(rnd(-3, 3), rnd(-3, 3)); }
 
       // Ground
-      const grd = ctx.createLinearGradient(0, this.groundY, 0, this.groundY + 4);
-      grd.addColorStop(0, COLORS.cyan);
-      grd.addColorStop(1, 'transparent');
-      ctx.fillStyle = grd;
-      ctx.fillRect(0, this.groundY, this.w, 4);
+      c.fillStyle = 'rgba(0,240,255,0.3)';
+      c.fillRect(0, GROUND_Y, FIELD_W, 3);
 
-      if (this.state === 'menu') { this._drawMenu(); return; }
-      if (this.state === 'over') { this._drawGame(); this._drawOverlay(); return; }
-      this._drawGame();
+      if (this.state === 'loading') { this._drawLoading(c); return; }
+      if (this.state === 'menu') { this._drawMenu(c); return; }
+      if (this.state === 'over') { this._drawPlay(c, now); this._drawOver(c); return; }
+      if (this.state === 'entering_name') { this._drawPlay(c, now); this._drawNameInput(c); return; }
+      this._drawPlay(c, now);
     }
 
-    _drawGame() {
-      const ctx = this.ctx;
+    _drawLoading(c) {
+      c.font = '10px ' + PIXEL_FONT;
+      c.fillStyle = '#00f0ff';
+      c.textAlign = 'center';
+      c.fillText('ЗАГРУЗКА...', FIELD_W / 2, FIELD_H / 2);
+    }
 
-      // Debuff visual effects
-      if (this._hasDebuff('blur')) {
-        ctx.fillStyle = 'rgba(100,50,50,0.15)';
-        ctx.fillRect(0, 0, this.w, this.h);
-      }
-      if (this._hasDebuff('burn')) {
-        ctx.fillStyle = 'rgba(255,50,0,0.08)';
-        ctx.fillRect(0, 0, this.w, this.h);
-      }
-      if (this._hasDebuff('shake')) {
-        ctx.save();
-        ctx.translate((Math.random() - 0.5) * 4, (Math.random() - 0.5) * 4);
-      }
-
-      // Terms
+    _drawPlay(c, now) {
+      // Terms — all look the same!
       for (const t of this.terms) {
-        ctx.save();
-        ctx.translate(t.x + t.w / 2, t.y + TERM_H / 2);
-        ctx.rotate(t.angle);
-        const borderColor = t.good ? COLORS.good : COLORS.bad;
-        ctx.fillStyle = 'rgba(10,14,26,0.9)';
-        ctx.strokeStyle = borderColor;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.roundRect(-t.w / 2, -TERM_H / 2, t.w, TERM_H, 6);
-        ctx.fill();
-        ctx.stroke();
-        // Glow
-        ctx.shadowColor = borderColor;
-        ctx.shadowBlur = 8;
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = t.good ? COLORS.good : COLORS.bad;
-        ctx.font = 'bold 13px Inter, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(t.text, 0, 0);
-        ctx.restore();
+        c.save();
+        c.translate(t.x + t.w / 2, t.y + TERM_H / 2);
+        c.rotate(t.rot);
+        c.fillStyle = 'rgba(20,25,50,0.88)';
+        c.strokeStyle = 'rgba(200,210,230,0.5)';
+        c.lineWidth = 1.5;
+        c.beginPath();
+        c.roundRect(-t.w / 2, -TERM_H / 2, t.w, TERM_H, 4);
+        c.fill(); c.stroke();
+        c.fillStyle = '#dde4f0';
+        c.font = '9px ' + PIXEL_FONT;
+        c.textAlign = 'center';
+        c.textBaseline = 'middle';
+        c.fillText(t.text, 0, 1);
+        c.restore();
       }
 
       // Player
-      const px = this.playerX, py = this.groundY - PLAYER_H;
-      ctx.fillStyle = COLORS.cyan;
-      ctx.fillRect(px + this.playerW * 0.2, py, this.playerW * 0.6, PLAYER_H * 0.35); // head
-      ctx.fillStyle = '#1a2040';
-      ctx.fillRect(px + this.playerW * 0.1, py + PLAYER_H * 0.35, this.playerW * 0.8, PLAYER_H * 0.45); // body
-      ctx.strokeStyle = COLORS.cyan;
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(px + this.playerW * 0.1, py + PLAYER_H * 0.35, this.playerW * 0.8, PLAYER_H * 0.45);
-      ctx.fillStyle = COLORS.cyan;
-      ctx.fillRect(px + this.playerW * 0.15, py + PLAYER_H * 0.8, this.playerW * 0.25, PLAYER_H * 0.2); // legs
-      ctx.fillRect(px + this.playerW * 0.6, py + PLAYER_H * 0.8, this.playerW * 0.25, PLAYER_H * 0.2);
+      const px = this.playerX, py = GROUND_Y - PLAYER_H;
+      if (this.playerImg.complete && this.playerImg.naturalWidth) {
+        c.imageSmoothingEnabled = false;
+        c.drawImage(this.playerImg, px, py, this.playerW, PLAYER_H);
+        c.imageSmoothingEnabled = true;
+      } else {
+        // Fallback pixel character
+        c.fillStyle = '#5599dd';
+        c.fillRect(px + this.playerW * 0.25, py, this.playerW * 0.5, PLAYER_H * 0.3);
+        c.fillStyle = '#334466';
+        c.fillRect(px + this.playerW * 0.15, py + PLAYER_H * 0.3, this.playerW * 0.7, PLAYER_H * 0.5);
+        c.fillStyle = '#5599dd';
+        c.fillRect(px + this.playerW * 0.2, py + PLAYER_H * 0.8, this.playerW * 0.2, PLAYER_H * 0.2);
+        c.fillRect(px + this.playerW * 0.6, py + PLAYER_H * 0.8, this.playerW * 0.2, PLAYER_H * 0.2);
+      }
 
       // Particles
-      if (this.particles) {
-        for (const p of this.particles) {
-          ctx.globalAlpha = Math.max(0, p.life / 600);
-          ctx.fillStyle = p.color;
-          ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
-        }
-        ctx.globalAlpha = 1;
+      for (const p of this.particles) {
+        c.globalAlpha = Math.max(0, p.life / 500);
+        c.fillStyle = p.color;
+        c.fillRect(p.x - 2, p.y - 2, 4, 4);
       }
+      c.globalAlpha = 1;
 
-      if (this._hasDebuff('shake')) ctx.restore();
+      if (this._hasDebuff('shake')) c.restore();
 
       // HUD
-      this._drawHUD();
-    }
-
-    _drawHUD() {
-      const ctx = this.ctx;
-      ctx.fillStyle = COLORS.hudBg;
-      ctx.fillRect(0, 0, this.w, 44);
-      ctx.fillStyle = 'rgba(0,240,255,0.1)';
-      ctx.fillRect(0, 43, this.w, 1);
+      c.fillStyle = 'rgba(10,14,26,0.85)';
+      c.fillRect(0, 0, FIELD_W, 36);
+      c.fillStyle = 'rgba(0,240,255,0.15)';
+      c.fillRect(0, 35, FIELD_W, 1);
 
       // Lives
-      ctx.font = '18px sans-serif';
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'middle';
+      c.font = '14px sans-serif';
+      c.textAlign = 'left'; c.textBaseline = 'middle';
       let hearts = '';
-      for (let i = 0; i < 3; i++) hearts += i < this.lives ? '❤️' : '🖤';
-      ctx.fillText(hearts, 12, 22);
+      for (let i = 0; i < MAX_LIVES; i++) hearts += i < this.lives ? '❤️' : '🖤';
+      c.fillText(hearts, 8, 18);
 
       // Score
-      ctx.font = 'bold 16px Outfit, sans-serif';
-      ctx.fillStyle = COLORS.cyan;
-      ctx.textAlign = 'right';
-      ctx.fillText('⭐ ' + this.score, this.w - 12, 22);
+      c.font = '10px ' + PIXEL_FONT;
+      c.fillStyle = '#00f0ff';
+      c.textAlign = 'right';
+      c.fillText(this.score + '', FIELD_W - 10, 20);
 
-      // Active debuffs
-      const activeDebuffs = [];
-      for (const [k, v] of Object.entries(this.debuffs)) {
-        const remaining = Math.ceil((v.until - performance.now()) / 1000);
-        if (remaining > 0) activeDebuffs.push(v.msg + ' ' + remaining + 'с');
+      // Active debuffs bar
+      const active = [];
+      if (this._hasDebuff('slow')) active.push('🐌');
+      if (this._hasDebuff('invert')) active.push('🔄');
+      if (this._hasDebuff('blur')) active.push('🌫️');
+      if (this._hasDebuff('shake')) active.push('💥');
+      if (this._hasDebuff('grow')) active.push('📏');
+      if (active.length) {
+        c.font = '12px sans-serif';
+        c.textAlign = 'center';
+        c.fillText(active.join(' '), FIELD_W / 2, GROUND_Y + 25);
       }
-      if (activeDebuffs.length) {
-        ctx.font = '12px Inter, sans-serif';
-        ctx.fillStyle = COLORS.bad;
-        ctx.textAlign = 'center';
-        ctx.fillText(activeDebuffs.join('  •  '), this.w / 2, 22);
-      }
-    }
 
-    _drawMenu() {
-      const ctx = this.ctx, cx = this.w / 2, cy = this.h / 2;
-      // Title
-      ctx.font = 'bold 32px Outfit, sans-serif';
-      ctx.fillStyle = COLORS.cyan;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.shadowColor = COLORS.cyan;
-      ctx.shadowBlur = 20;
-      ctx.fillText('ECOM CATCHER', cx, cy - 80);
-      ctx.shadowBlur = 0;
-
-      ctx.font = '16px Inter, sans-serif';
-      ctx.fillStyle = COLORS.dim;
-      ctx.fillText('Лови полезные термины, уклоняйся от вредных!', cx, cy - 40);
-
-      ctx.font = '14px Inter, sans-serif';
-      ctx.fillStyle = COLORS.good;
-      ctx.fillText('🟢 Зелёные = очки     ', cx - 40, cy);
-      ctx.fillStyle = COLORS.bad;
-      ctx.fillText('🔴 Красные = штрафы', cx + 80, cy);
-
-      ctx.fillStyle = COLORS.dim;
-      ctx.fillText('← → стрелки или A/D для управления', cx, cy + 40);
-
-      // Start button
-      const bw = 200, bh = 48, bx = cx - bw / 2, by = cy + 70;
-      ctx.strokeStyle = COLORS.cyan;
-      ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.roundRect(bx, by, bw, bh, 10); ctx.stroke();
-      ctx.font = 'bold 18px Outfit, sans-serif';
-      ctx.fillStyle = COLORS.cyan;
-      ctx.fillText('Играть', cx, by + bh / 2);
-
-      if (this.highScore > 0) {
-        ctx.font = '13px Inter, sans-serif';
-        ctx.fillStyle = COLORS.purple;
-        ctx.fillText('Рекорд: ' + this.highScore, cx, by + bh + 30);
+      // Flash message
+      if (this.flashMsg) {
+        c.font = 'bold 12px ' + PIXEL_FONT;
+        c.fillStyle = this.flashMsg.color;
+        c.textAlign = 'center';
+        c.globalAlpha = Math.min(1, (this.flashEnd - performance.now()) / 600);
+        c.fillText(this.flashMsg.text, FIELD_W / 2, GROUND_Y - PLAYER_H - 20);
+        c.globalAlpha = 1;
       }
     }
 
-    _drawOverlay() {
-      const ctx = this.ctx, cx = this.w / 2, cy = this.h / 2;
-      ctx.fillStyle = 'rgba(10,14,26,0.85)';
-      ctx.fillRect(0, 0, this.w, this.h);
+    _drawMenu(c) {
+      const cx = FIELD_W / 2, cy = FIELD_H / 2 - 30;
+      c.font = '14px ' + PIXEL_FONT;
+      c.fillStyle = '#00f0ff';
+      c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.shadowColor = '#00f0ff'; c.shadowBlur = 12;
+      c.fillText('ECOM', cx, cy - 50);
+      c.fillText('CATCHER', cx, cy - 28);
+      c.shadowBlur = 0;
 
-      ctx.font = 'bold 28px Outfit, sans-serif';
-      ctx.fillStyle = COLORS.bad;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('GAME OVER', cx, cy - 50);
+      c.font = '8px ' + PIXEL_FONT;
+      c.fillStyle = 'rgba(255,255,255,0.5)';
+      c.fillText('Лови полезные термины', cx, cy + 10);
+      c.fillText('уклоняйся от вредных!', cx, cy + 28);
 
-      ctx.font = 'bold 40px Outfit, sans-serif';
-      ctx.fillStyle = COLORS.cyan;
-      ctx.fillText(this.score, cx, cy);
+      c.fillStyle = 'rgba(255,255,255,0.3)';
+      c.fillText('← → или A/D', cx, cy + 56);
 
-      ctx.font = '14px Inter, sans-serif';
-      ctx.fillStyle = COLORS.dim;
-      ctx.fillText('очков', cx, cy + 28);
+      // Play button
+      const bw = 160, bh = 36, bx = cx - bw / 2, by = cy + 80;
+      c.strokeStyle = '#00f0ff'; c.lineWidth = 2;
+      c.beginPath(); c.roundRect(bx, by, bw, bh, 4); c.stroke();
+      c.font = '10px ' + PIXEL_FONT;
+      c.fillStyle = '#00f0ff';
+      c.fillText('ИГРАТЬ', cx, by + bh / 2 + 1);
 
-      if (this.score >= this.highScore && this.score > 0) {
-        ctx.fillStyle = COLORS.purple;
-        ctx.font = 'bold 14px Inter, sans-serif';
-        ctx.fillText('🏆 Новый рекорд!', cx, cy + 55);
+      // Leaderboard
+      const lb = this._getLeaderboard();
+      if (lb.length > 0) {
+        const lbY = by + bh + 30;
+        c.font = '8px ' + PIXEL_FONT;
+        c.fillStyle = '#c084fc';
+        c.fillText('— РЕКОРДЫ —', cx, lbY);
+        c.font = '7px ' + PIXEL_FONT;
+        for (let i = 0; i < Math.min(5, lb.length); i++) {
+          const entry = lb[i];
+          c.fillStyle = i === 0 ? '#ffd700' : 'rgba(255,255,255,0.5)';
+          c.textAlign = 'left';
+          c.fillText((i + 1) + '. ' + entry.name, cx - 90, lbY + 20 + i * 16);
+          c.textAlign = 'right';
+          c.fillText(entry.score + '', cx + 90, lbY + 20 + i * 16);
+        }
+        c.textAlign = 'center';
       }
+    }
 
-      ctx.font = '14px Inter, sans-serif';
-      ctx.fillStyle = COLORS.dim;
-      ctx.fillText('Нажмите Enter или Space', cx, cy + 90);
+    _drawOver(c) {
+      c.fillStyle = 'rgba(10,14,26,0.82)';
+      c.fillRect(0, 0, FIELD_W, FIELD_H);
+      const cx = FIELD_W / 2, cy = FIELD_H / 2 - 20;
+      c.font = '12px ' + PIXEL_FONT;
+      c.fillStyle = '#ff4466';
+      c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.fillText('GAME OVER', cx, cy - 40);
+      c.font = '20px ' + PIXEL_FONT;
+      c.fillStyle = '#00f0ff';
+      c.fillText(this.score + '', cx, cy);
+      c.font = '8px ' + PIXEL_FONT;
+      c.fillStyle = 'rgba(255,255,255,0.4)';
+      c.fillText('очков', cx, cy + 22);
+
+      c.fillStyle = 'rgba(255,255,255,0.35)';
+      c.fillText('Enter — сохранить', cx, cy + 60);
+      c.fillText('Esc — в меню', cx, cy + 78);
+    }
+
+    _drawNameInput(c) {
+      c.fillStyle = 'rgba(10,14,26,0.88)';
+      c.fillRect(0, 0, FIELD_W, FIELD_H);
+      const cx = FIELD_W / 2, cy = FIELD_H / 2 - 20;
+      c.font = '10px ' + PIXEL_FONT;
+      c.fillStyle = '#c084fc';
+      c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.fillText('ВАШ НИК:', cx, cy - 30);
+
+      // Input box
+      const bw = 240, bh = 32, bx = cx - bw / 2, by = cy - 5;
+      c.fillStyle = 'rgba(30,35,60,0.9)';
+      c.strokeStyle = '#00f0ff'; c.lineWidth = 2;
+      c.beginPath(); c.roundRect(bx, by, bw, bh, 4); c.fill(); c.stroke();
+
+      c.font = '10px ' + PIXEL_FONT;
+      c.fillStyle = '#e0e6f0';
+      c.textAlign = 'center';
+      const cursor = Math.floor(performance.now() / 500) % 2 === 0 ? '▌' : '';
+      c.fillText(this.nickname + cursor, cx, by + bh / 2 + 1);
+
+      c.font = '7px ' + PIXEL_FONT;
+      c.fillStyle = 'rgba(255,255,255,0.35)';
+      c.fillText('Enter — сохранить', cx, by + bh + 24);
     }
 
     _loop(ts) {
-      const dt = this._lastTs ? ts - this._lastTs : 16;
+      const dt = this._lastTs ? Math.min(ts - this._lastTs, 50) : 16;
       this._lastTs = ts;
       this._update(dt, ts);
-      this._draw();
+      this._draw(ts);
       requestAnimationFrame(t => this._loop(t));
     }
   }
 
-  // Auto-init
   window.EcomCatcher = Game;
 })();
