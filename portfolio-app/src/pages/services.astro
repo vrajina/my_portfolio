@@ -140,7 +140,7 @@ const allServices = [
 				<fieldset class="form-fieldset">
 					<legend>Какие услуги интересуют?</legend>
 					<div class="checkbox-list">
-						<label class="checkbox-item"><input type="checkbox" name="services" value="storefront" /><span>🧊 Онлайн-витрина: аудит, редизайн, создание с&nbsp;нуля</span></label>
+						<label class="checkbox-item"><input type="checkbox" name="services" value="storefront" /><span>🛍️ Онлайн-витрина: аудит, редизайн, создание с&nbsp;нуля</span></label>
 						<label class="checkbox-item"><input type="checkbox" name="services" value="content" /><span>📦 Продукт и&nbsp;контент: PIM, фотостудия, контент-стратегия</span></label>
 						<label class="checkbox-item"><input type="checkbox" name="services" value="marketing" /><span>📣 Маркетинг: аудит каналов, воронки привлечения</span></label>
 						<label class="checkbox-item"><input type="checkbox" name="services" value="client-service" /><span>🤝 Клиентский сервис: CRM, лояльность, омниканальность</span></label>
@@ -359,7 +359,7 @@ const allServices = [
 	}
 	.checkbox-item {
 		display: flex;
-		align-items: flex-start;
+		align-items: center;
 		gap: 0.5rem;
 		cursor: pointer;
 		font-size: 0.85rem;
@@ -372,7 +372,6 @@ const allServices = [
 	}
 	.checkbox-item input[type="checkbox"] {
 		accent-color: var(--neon-cyan);
-		margin-top: 2px;
 		flex-shrink: 0;
 	}
 
@@ -545,4 +544,46 @@ const allServices = [
 	};
 	document.addEventListener('DOMContentLoaded', initForm);
 	document.addEventListener('astro:page-load', initForm);
+
+	// Russian phone mask +7 (___) ___-__-__
+	function initPhoneMask() {
+		const phone = document.getElementById('phone') as HTMLInputElement;
+		if (!phone) return;
+
+		phone.addEventListener('focus', () => {
+			if (!phone.value) phone.value = '+7 (';
+		});
+
+		phone.addEventListener('input', (e) => {
+			const input = e.target as HTMLInputElement;
+			let digits = input.value.replace(/\D/g, '');
+
+			// Always starts with 7
+			if (!digits.startsWith('7')) digits = '7' + digits;
+			if (digits.length > 11) digits = digits.slice(0, 11);
+
+			let formatted = '+7';
+			if (digits.length > 1) formatted += ' (' + digits.slice(1, 4);
+			if (digits.length >= 4) formatted += ') ';
+			if (digits.length > 4) formatted += digits.slice(4, 7);
+			if (digits.length > 7) formatted += '-' + digits.slice(7, 9);
+			if (digits.length > 9) formatted += '-' + digits.slice(9, 11);
+
+			input.value = formatted;
+		});
+
+		phone.addEventListener('keydown', (e) => {
+			const input = e.target as HTMLInputElement;
+			if (e.key === 'Backspace' && input.value.length <= 4) {
+				e.preventDefault();
+				input.value = '';
+			}
+		});
+
+		phone.addEventListener('blur', () => {
+			if (phone.value === '+7 (' || phone.value === '+7') phone.value = '';
+		});
+	}
+	document.addEventListener('DOMContentLoaded', initPhoneMask);
+	document.addEventListener('astro:page-load', initPhoneMask);
 </script>
