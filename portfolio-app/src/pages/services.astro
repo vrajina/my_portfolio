@@ -133,13 +133,46 @@ const allServices = [
 				<!-- Выбор услуг -->
 				<fieldset class="form-fieldset">
 					<legend>Какие услуги интересуют?</legend>
-					<div class="checkbox-grid">
-						{allServices.map((s) => (
-							<label class="checkbox-item">
-								<input type="checkbox" name="services" value={s.id} />
-								<span set:html={s.name} />
-							</label>
-						))}
+					<div class="checkbox-groups">
+						<div class="checkbox-group">
+							<span class="group-label">🧊 Онлайн-витрина</span>
+							<label class="checkbox-item"><input type="checkbox" name="services" value="ux-audit" /><span>Аудит</span></label>
+							<label class="checkbox-item"><input type="checkbox" name="services" value="shop-from-scratch" /><span>Создание с&nbsp;нуля</span></label>
+							<label class="checkbox-item"><input type="checkbox" name="services" value="redesign" /><span>Редизайн</span></label>
+						</div>
+						<div class="checkbox-group">
+							<span class="group-label">📦 Продукт и&nbsp;контент</span>
+							<label class="checkbox-item"><input type="checkbox" name="services" value="pim" /><span>PIM-процессы</span></label>
+							<label class="checkbox-item"><input type="checkbox" name="services" value="photo-studio" /><span>Фотостудия</span></label>
+							<label class="checkbox-item"><input type="checkbox" name="services" value="content-strategy" /><span>Контент-стратегия</span></label>
+						</div>
+						<div class="checkbox-group">
+							<span class="group-label">📣 Маркетинг</span>
+							<label class="checkbox-item"><input type="checkbox" name="services" value="marketing-audit" /><span>Аудит каналов</span></label>
+							<label class="checkbox-item"><input type="checkbox" name="services" value="funnel" /><span>Воронки привлечения</span></label>
+						</div>
+						<div class="checkbox-group">
+							<span class="group-label">🤝 Клиентский сервис</span>
+							<label class="checkbox-item"><input type="checkbox" name="services" value="crm-loyalty" /><span>CRM и&nbsp;лояльность</span></label>
+							<label class="checkbox-item"><input type="checkbox" name="services" value="omnichannel" /><span>Омниканальность</span></label>
+							<label class="checkbox-item"><input type="checkbox" name="services" value="service-audit" /><span>Аудит сервиса</span></label>
+						</div>
+						<div class="checkbox-group">
+							<span class="group-label">🚚 Логистика</span>
+							<label class="checkbox-item"><input type="checkbox" name="services" value="fulfillment" /><span>Фулфилмент</span></label>
+							<label class="checkbox-item"><input type="checkbox" name="services" value="marketplaces" /><span>Маркетплейсы</span></label>
+						</div>
+						<div class="checkbox-group">
+							<span class="group-label">🤖 Разработка и&nbsp;ИИ</span>
+							<label class="checkbox-item"><input type="checkbox" name="services" value="it-architecture" /><span>IT-архитектура</span></label>
+							<label class="checkbox-item"><input type="checkbox" name="services" value="ai-integration" /><span>Внедрение ИИ</span></label>
+							<label class="checkbox-item"><input type="checkbox" name="services" value="vibecoding" /><span>Вайбкодинг / MVP</span></label>
+						</div>
+						<div class="checkbox-group">
+							<span class="group-label">🔀 Комплексно</span>
+							<label class="checkbox-item"><input type="checkbox" name="services" value="full-audit" /><span>Полный аудит</span></label>
+							<label class="checkbox-item"><input type="checkbox" name="services" value="build-team" /><span>Построение команды</span></label>
+						</div>
 					</div>
 				</fieldset>
 
@@ -344,11 +377,24 @@ const allServices = [
 		color: var(--text-primary);
 		padding: 0 0.5rem;
 	}
-	.checkbox-grid {
+	.checkbox-groups {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-		gap: 0.6rem;
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		gap: 1.2rem;
 		margin-top: 1rem;
+	}
+	.checkbox-group {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+	}
+	.group-label {
+		font-family: 'Outfit', sans-serif;
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: rgba(255, 255, 255, 0.35);
+		letter-spacing: 0.5px;
+		margin-bottom: 0.2rem;
 	}
 	.checkbox-item {
 		display: flex;
@@ -492,7 +538,7 @@ const allServices = [
 		.floor-section { padding: 2rem 1.5rem 1.5rem; }
 		.services-grid { grid-template-columns: 1fr; }
 		.contact-form-section { padding: 3rem 1.5rem; }
-		.checkbox-grid { grid-template-columns: 1fr; }
+		.checkbox-groups { grid-template-columns: repeat(2, 1fr); }
 		.form-row { grid-template-columns: 1fr; }
 	}
 </style>
