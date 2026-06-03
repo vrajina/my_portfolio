@@ -1,41 +1,209 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
+
+const serviceGroups = [
+	{
+		icon: '🧊',
+		floor: '01',
+		title: 'Витрина',
+		services: [
+			{ id: 'ux-audit-web', name: 'UX/UI-аудит интернет-магазина', desc: 'Покажу, где ваш сайт теряет деньги. Полный разбор пользовательского пути: от\u00A0первого клика до\u00A0оплаты. Конкретные рекомендации, а\u00A0не\u00A0абстрактные «улучшите юзабилити».' },
+			{ id: 'ux-audit-app', name: 'UX/UI-аудит мобильного приложения', desc: 'То\u00A0же самое, но\u00A0для приложения: навигация, корзина, чекаут, пуши, удержание. Разберу по\u00A0экранам и\u00A0скажу, где вы\u00A0теряете пользователей.' },
+			{ id: 'shop-from-scratch', name: 'Создание онлайн-витрины с\u00A0нуля', desc: 'Спроектирую и\u00A0запущу конверсионный интернет-магазин\u00A0— от\u00A0прототипа до\u00A0первого заказа. Без раздутых бюджетов и\u00A0годовой разработки.' },
+			{ id: 'redesign', name: 'Редизайн и\u00A0перезапуск', desc: 'Ваш магазин работает, но\u00A0выглядит как\u00A02018-й? Обновлю дизайн, ускорю загрузку, перестрою каталог\u00A0— так, чтобы конверсия выросла, а\u00A0не\u00A0просто «стало красиво».' },
+			{ id: 'messenger-shop', name: 'Магазин в\u00A0мессенджере', desc: 'Интернет-магазин в\u00A0Telegram (или, прости господи, в\u00A0Максе)\u00A0— без сайта, без приложения. Минимальные вложения, максимальная близость к\u00A0клиенту.' },
+		]
+	},
+	{
+		icon: '📦',
+		floor: '02',
+		title: 'Продукт и\u00A0контент',
+		services: [
+			{ id: 'pim', name: 'Построение PIM-процессов', desc: 'Настрою управление товарным контентом: от\u00A0фотосъёмки до\u00A0карточки товара. Структура данных, обогащение, публикация\u00A0— на\u00A0тысячи SKU без хаоса.' },
+			{ id: 'photo-studio', name: 'Запуск контентной фотостудии', desc: 'Помогу организовать собственную фотостудию: оборудование, процессы, стандарты съёмки. Контент, который продаёт, а\u00A0не\u00A0просто заполняет карточку.' },
+			{ id: 'content-strategy', name: 'Контент-стратегия для каталога', desc: 'Какие фото нужны, сколько ракурсов, нужно\u00A0ли видео, как описывать товар\u00A0— разработаю стандарты контента, которые реально влияют на\u00A0продажи.' },
+		]
+	},
+	{
+		icon: '📣',
+		floor: '03',
+		title: 'Маркетинг',
+		services: [
+			{ id: 'marketing-audit', name: 'Аудит маркетинговых каналов', desc: 'Разберу ваши рекламные кампании, SEO, соцсети и\u00A0маркетплейсы. Покажу, где сливается бюджет и\u00A0где точки роста. Не\u00A0теория\u00A0— цифры и\u00A0план.' },
+			{ id: 'funnel', name: 'Построение воронки привлечения', desc: 'Выстрою систему лидогенерации: от\u00A0первого касания до\u00A0покупки. SEO, контекст, таргет, маркетплейсы\u00A0— каждый канал на\u00A0своём месте.' },
+		]
+	},
+	{
+		icon: '🤝',
+		floor: '04',
+		title: 'Клиентский сервис',
+		services: [
+			{ id: 'crm-loyalty', name: 'Внедрение CRM и\u00A0программы лояльности', desc: 'Настрою систему, которая превращает разовых покупателей в\u00A0постоянных. CRM, сегментация, триггеры, бонусные механики\u00A0— без «спама на\u00A0всю базу».' },
+			{ id: 'omnichannel', name: 'Омниканальные коммуникации', desc: 'Объединю онлайн и\u00A0офлайн в\u00A0единый клиентский опыт. Одна программа лояльности, одна история покупок\u00A0— хоть в\u00A0приложении, хоть в\u00A0магазине на\u00A0Тверской.' },
+			{ id: 'service-audit', name: 'Аудит клиентского сервиса', desc: 'Пройду путь вашего клиента сам: от\u00A0первого звонка до\u00A0возврата. Найду, где теряется лояльность, и\u00A0предложу конкретные исправления.' },
+		]
+	},
+	{
+		icon: '🚚',
+		floor: '05',
+		title: 'Склад и\u00A0логистика',
+		services: [
+			{ id: 'fulfillment', name: 'Оптимизация фулфилмента', desc: 'Проанализирую вашу цепочку «заказ → доставка» и\u00A0найду узкие места. Иногда рост продаж\u00A0— это не\u00A0реклама, а\u00A0просто товар в\u00A0наличии.' },
+			{ id: 'marketplaces', name: 'Интеграция с\u00A0маркетплейсами', desc: 'Подключу к\u00A0Wildberries, Ozon, Яндекс Маркету\u00A0— или наведу порядок в\u00A0том, что уже подключено. Остатки, цены, контент\u00A0— всё в\u00A0одном месте.' },
+		]
+	},
+	{
+		icon: '🤖',
+		floor: '06',
+		title: 'Разработка и\u00A0ИИ',
+		services: [
+			{ id: 'it-architecture', name: 'Проектирование IT-архитектуры', desc: 'Спроектирую техническую архитектуру \u003Cnobr\u003Ee-commerce\u003C/nobr\u003E: от\u00A0монолита до\u00A0микросервисов. Без оверинжиниринга\u00A0— ровно столько, сколько нужно бизнесу сейчас.' },
+			{ id: 'ai-integration', name: 'Внедрение ИИ в\u00A0бизнес-процессы', desc: 'Покажу, где ИИ реально экономит время и\u00A0деньги: генерация контента, аналитика, автоматизация рутины. Не\u00A0хайп\u00A0— конкретные внедрения с\u00A0измеримым результатом.' },
+			{ id: 'vibecoding', name: 'Вайбкодинг и\u00A0быстрое прототипирование', desc: 'Нужен MVP за\u00A0дни, а\u00A0не\u00A0за\u00A0полгода? Соберу рабочий прототип с\u00A0помощью ИИ-инструментов\u00A0— чтобы проверить гипотезу до\u00A0того, как вы\u00A0потратите бюджет на\u00A0«настоящую» разработку.' },
+		]
+	},
+];
+
+const crossServices = [
+	{ id: 'full-audit', name: 'Полный \u003Cnobr\u003Ee-commerce\u003C/nobr\u003E аудит', desc: 'Комплексная проверка всех этажей айсберга: от\u00A0витрины до\u00A0логистики. Результат\u00A0— приоритизированный roadmap с\u00A0оценкой сроков и\u00A0бюджетов.' },
+	{ id: 'build-team', name: 'Построение \u003Cnobr\u003Ee-commerce\u003C/nobr\u003E подразделения', desc: 'Помогу собрать команду с\u00A0нуля: оргструктура, найм, онбординг, процессы. От\u00A0первого сотрудника до\u00A0работающего механизма.' },
+];
+
+const allServices = [
+	...serviceGroups.flatMap(g => g.services),
+	...crossServices,
+];
 ---
 
-<Layout title="Услуги — Илья Кадацкий | E-commerce Executive" description="Консалтинг, аудит и управление e-commerce проектами. Стратегия, маркетинг, логистика, IT-архитектура — полный цикл электронной торговли.">
-	<main class="stub-page">
-		<section class="stub-hero">
-			<span class="stub-tag">Раздел в&nbsp;разработке</span>
-			<h1>Услуги</h1>
-			<p class="stub-desc">Этот раздел скоро появится. Здесь будет информация об&nbsp;услугах: стратегический консалтинг, аудит <nobr>e-commerce</nobr>, построение команд и&nbsp;процессов, IT-архитектура и&nbsp;интеграция ИИ в&nbsp;бизнес-процессы.</p>
-			<div class="stub-actions">
-				<a href="/" class="stub-btn">← На&nbsp;главную</a>
-				<a href="mailto:ilya.kadatsky@yandex.ru" class="stub-btn stub-btn--accent">Написать</a>
+<Layout title="Услуги — Илья Кадацкий | Руководитель e-commerce" description="Консалтинг, аудит и управление e-commerce проектами. UX-аудит, PIM, маркетинг, CRM, логистика, ИИ — полный цикл электронной торговли.">
+	<main class="services-page">
+
+		<!-- Hero -->
+		<section class="services-hero">
+			<span class="hero-tag">Услуги</span>
+			<h1>Каждый этаж айсберга&nbsp;— отдельная экспертиза</h1>
+			<p class="hero-desc">Выберите глубину, на&nbsp;которой нужна помощь.&nbsp;Или закажите полное погружение.</p>
+		</section>
+
+		<!-- Услуги по этажам -->
+		{serviceGroups.map((group) => (
+			<section class="floor-section">
+				<div class="floor-header">
+					<span class="floor-icon">{group.icon}</span>
+					<div>
+						<span class="floor-num">{group.floor}</span>
+						<h2 set:html={group.title} />
+					</div>
+				</div>
+				<div class="services-grid">
+					{group.services.map((s) => (
+						<div class="service-card">
+							<h3 set:html={s.name} />
+							<p set:html={s.desc} />
+						</div>
+					))}
+				</div>
+			</section>
+		))}
+
+		<!-- Сквозные -->
+		<section class="floor-section floor-section--cross">
+			<div class="floor-header">
+				<span class="floor-icon">🔀</span>
+				<div>
+					<span class="floor-num">∞</span>
+					<h2>Сквозные услуги</h2>
+				</div>
+			</div>
+			<div class="services-grid">
+				{crossServices.map((s) => (
+					<div class="service-card service-card--cross">
+						<h3 set:html={s.name} />
+						<p set:html={s.desc} />
+					</div>
+				))}
 			</div>
 		</section>
-		<Footer />
+
+		<!-- Форма заявки -->
+		<section class="contact-form-section" id="request">
+			<h2>Оставить заявку</h2>
+			<p class="form-subtitle">Выберите интересующие услуги, опишите задачу — и&nbsp;я&nbsp;вернусь с&nbsp;предложением.</p>
+
+			<form class="request-form" id="requestForm">
+				<!-- Выбор услуг -->
+				<fieldset class="form-fieldset">
+					<legend>Какие услуги интересуют?</legend>
+					<div class="checkbox-grid">
+						{allServices.map((s) => (
+							<label class="checkbox-item">
+								<input type="checkbox" name="services" value={s.id} />
+								<span set:html={s.name} />
+							</label>
+						))}
+					</div>
+				</fieldset>
+
+				<!-- Комментарий -->
+				<div class="form-group">
+					<label for="comment">Расскажите о задаче</label>
+					<textarea id="comment" name="comment" rows="4" placeholder="Опишите ваш проект, задачу или вопрос..."></textarea>
+				</div>
+
+				<!-- Файл -->
+				<div class="form-group">
+					<label for="brief">Прикрепить бриф или файл</label>
+					<div class="file-upload" id="fileUploadArea">
+						<input type="file" id="brief" name="brief" accept=".pdf,.doc,.docx,.xls,.xlsx,.pptx,.txt,.zip" />
+						<span class="file-label">📎 Перетащите файл сюда или <u>выберите</u></span>
+						<span class="file-hint">PDF, DOC, XLS, PPTX, TXT, ZIP — до 10 МБ</span>
+					</div>
+				</div>
+
+				<!-- Контакты -->
+				<div class="form-row">
+					<div class="form-group">
+						<label for="name">Имя *</label>
+						<input type="text" id="name" name="name" required placeholder="Как к вам обращаться" />
+					</div>
+					<div class="form-group">
+						<label for="email">Email *</label>
+						<input type="email" id="email" name="email" required placeholder="your@email.com" />
+					</div>
+					<div class="form-group">
+						<label for="phone">Телефон</label>
+						<input type="tel" id="phone" name="phone" placeholder="+7 (___) ___-__-__" />
+					</div>
+				</div>
+
+				<!-- 152-ФЗ -->
+				<label class="consent-label">
+					<input type="checkbox" name="consent" required />
+					<span>Я&nbsp;даю согласие на&nbsp;обработку <a href="/privacy" target="_blank">персональных данных</a> в&nbsp;соответствии с&nbsp;Федеральным законом №152-ФЗ «О&nbsp;персональных данных»</span>
+				</label>
+
+				<button type="submit" class="submit-btn">Отправить заявку</button>
+			</form>
+		</section>
+
 	</main>
+	<Footer />
 </Layout>
 
 <style>
-	.stub-page {
-		min-height: 100vh;
-		display: flex;
-		flex-direction: column;
+	.services-page {
+		padding-top: 5rem;
 	}
-	.stub-hero {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
+
+	/* ===== HERO ===== */
+	.services-hero {
 		text-align: center;
-		padding: 8rem 2rem 4rem;
-		max-width: 640px;
+		padding: 4rem 2rem 3rem;
+		max-width: 700px;
 		margin: 0 auto;
 	}
-	.stub-tag {
+	.hero-tag {
 		font-family: 'Outfit', sans-serif;
 		font-size: 0.7rem;
 		font-weight: 600;
@@ -45,46 +213,332 @@ import Footer from '../components/Footer.astro';
 		border: 1px solid rgba(0, 240, 255, 0.2);
 		padding: 0.4rem 1rem;
 		border-radius: 20px;
+		display: inline-block;
 		margin-bottom: 2rem;
 	}
 	h1 {
 		font-family: 'Outfit', sans-serif;
-		font-size: clamp(2rem, 4vw, 3rem);
+		font-size: clamp(1.8rem, 4vw, 2.6rem);
 		color: var(--text-primary);
-		margin-bottom: 1.5rem;
+		margin-bottom: 1rem;
+		line-height: 1.2;
 	}
-	.stub-desc {
-		font-size: 1rem;
+	.hero-desc {
+		font-size: 1.05rem;
 		line-height: 1.7;
 		color: var(--text-secondary);
-		margin-bottom: 2.5rem;
 	}
-	.stub-actions {
+
+	/* ===== FLOOR SECTIONS ===== */
+	.floor-section {
+		max-width: 1100px;
+		margin: 0 auto;
+		padding: 3rem 2rem 2rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.04);
+	}
+	.floor-header {
 		display: flex;
+		align-items: center;
+		gap: 1rem;
+		margin-bottom: 2rem;
+	}
+	.floor-icon {
+		font-size: 2rem;
+		width: 56px;
+		height: 56px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: 14px;
+		flex-shrink: 0;
+	}
+	.floor-num {
+		font-family: 'Outfit', monospace;
+		font-size: 0.65rem;
+		font-weight: 600;
+		letter-spacing: 3px;
+		color: rgba(255, 255, 255, 0.2);
+		text-transform: uppercase;
+	}
+	.floor-header h2 {
+		font-family: 'Outfit', sans-serif;
+		font-size: 1.3rem;
+		color: var(--text-primary);
+		margin: 0;
+	}
+
+	/* ===== SERVICE CARDS ===== */
+	.services-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 		gap: 1rem;
 	}
-	.stub-btn {
-		font-family: 'Rajdhani', sans-serif;
-		font-weight: 600;
-		font-size: 0.9rem;
-		padding: 0.6rem 1.5rem;
-		border: 1px solid rgba(255, 255, 255, 0.15);
-		border-radius: 6px;
-		color: var(--text-primary);
-		text-decoration: none;
+	.service-card {
+		padding: 1.5rem;
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: 12px;
+		background: rgba(255, 255, 255, 0.015);
 		transition: all 0.3s ease;
-		letter-spacing: 1px;
 	}
-	.stub-btn:hover {
-		background: rgba(255, 255, 255, 0.06);
-		text-shadow: none;
+	.service-card:hover {
+		background: rgba(0, 240, 255, 0.03);
+		border-color: rgba(0, 240, 255, 0.12);
+		transform: translateY(-2px);
 	}
-	.stub-btn--accent {
+	.service-card h3 {
+		font-family: 'Outfit', sans-serif;
+		font-size: 1rem;
+		font-weight: 600;
+		color: var(--neon-cyan);
+		margin-bottom: 0.75rem;
+	}
+	.service-card p {
+		font-size: 0.88rem;
+		line-height: 1.65;
+		color: var(--text-secondary);
+		margin: 0;
+	}
+	.service-card--cross {
+		border-color: rgba(192, 132, 252, 0.12);
+	}
+	.service-card--cross:hover {
+		background: rgba(192, 132, 252, 0.04);
+		border-color: rgba(192, 132, 252, 0.2);
+	}
+	.service-card--cross h3 {
+		color: var(--accent-neon, #c084fc);
+	}
+
+	/* ===== FORM SECTION ===== */
+	.contact-form-section {
+		max-width: 800px;
+		margin: 2rem auto 0;
+		padding: 4rem 2rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.04);
+	}
+	.contact-form-section h2 {
+		font-family: 'Outfit', sans-serif;
+		font-size: 1.6rem;
+		color: var(--text-primary);
+		margin-bottom: 0.5rem;
+		text-align: center;
+	}
+	.form-subtitle {
+		text-align: center;
+		color: var(--text-secondary);
+		margin-bottom: 2.5rem;
+		font-size: 0.95rem;
+	}
+
+	/* Fieldset */
+	.form-fieldset {
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: 12px;
+		padding: 1.5rem;
+		margin-bottom: 1.5rem;
+	}
+	.form-fieldset legend {
+		font-family: 'Outfit', sans-serif;
+		font-weight: 600;
+		font-size: 0.85rem;
+		color: var(--text-primary);
+		padding: 0 0.5rem;
+	}
+	.checkbox-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+		gap: 0.6rem;
+		margin-top: 1rem;
+	}
+	.checkbox-item {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.5rem;
+		cursor: pointer;
+		font-size: 0.85rem;
+		color: var(--text-secondary);
+		line-height: 1.4;
+		transition: color 0.2s;
+	}
+	.checkbox-item:hover {
+		color: var(--text-primary);
+	}
+	.checkbox-item input[type="checkbox"] {
+		accent-color: var(--neon-cyan);
+		margin-top: 2px;
+		flex-shrink: 0;
+	}
+
+	/* Form groups */
+	.form-group {
+		margin-bottom: 1.5rem;
+	}
+	.form-group label {
+		display: block;
+		font-family: 'Outfit', sans-serif;
+		font-weight: 600;
+		font-size: 0.85rem;
+		color: var(--text-primary);
+		margin-bottom: 0.5rem;
+	}
+	.form-group input,
+	.form-group textarea {
+		width: 100%;
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 8px;
+		padding: 0.75rem 1rem;
+		color: var(--text-primary);
+		font-family: 'Inter', sans-serif;
+		font-size: 0.9rem;
+		transition: border-color 0.3s;
+		outline: none;
+	}
+	.form-group input:focus,
+	.form-group textarea:focus {
 		border-color: var(--neon-cyan);
-		color: var(--neon-cyan);
 	}
-	.stub-btn--accent:hover {
-		background: rgba(0, 240, 255, 0.08);
+	.form-group textarea {
+		resize: vertical;
+		min-height: 100px;
+	}
+	.form-row {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		gap: 1rem;
+	}
+	.form-row .form-group {
+		margin-bottom: 1rem;
+	}
+
+	/* File upload */
+	.file-upload {
+		position: relative;
+		border: 2px dashed rgba(255, 255, 255, 0.08);
+		border-radius: 10px;
+		padding: 1.5rem;
+		text-align: center;
+		cursor: pointer;
+		transition: all 0.3s;
+	}
+	.file-upload:hover {
+		border-color: rgba(0, 240, 255, 0.2);
+		background: rgba(0, 240, 255, 0.02);
+	}
+	.file-upload input[type="file"] {
+		position: absolute;
+		inset: 0;
+		opacity: 0;
+		cursor: pointer;
+	}
+	.file-label {
+		display: block;
+		color: var(--text-secondary);
+		font-size: 0.9rem;
+		margin-bottom: 0.3rem;
+	}
+	.file-hint {
+		font-size: 0.75rem;
+		color: rgba(255, 255, 255, 0.25);
+	}
+
+	/* Consent */
+	.consent-label {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.6rem;
+		font-size: 0.8rem;
+		color: var(--text-secondary);
+		line-height: 1.5;
+		margin-bottom: 2rem;
+		cursor: pointer;
+	}
+	.consent-label input {
+		accent-color: var(--neon-cyan);
+		margin-top: 2px;
+		flex-shrink: 0;
+	}
+	.consent-label a {
 		color: var(--neon-cyan);
+		text-decoration: underline;
+	}
+
+	/* Submit */
+	.submit-btn {
+		display: block;
+		width: 100%;
+		padding: 1rem;
+		background: linear-gradient(135deg, rgba(0, 240, 255, 0.15), rgba(192, 132, 252, 0.15));
+		border: 1px solid rgba(0, 240, 255, 0.25);
+		border-radius: 10px;
+		color: var(--text-primary);
+		font-family: 'Outfit', sans-serif;
+		font-weight: 600;
+		font-size: 1rem;
+		letter-spacing: 1px;
+		cursor: pointer;
+		transition: all 0.3s;
+	}
+	.submit-btn:hover {
+		background: linear-gradient(135deg, rgba(0, 240, 255, 0.25), rgba(192, 132, 252, 0.25));
+		border-color: rgba(0, 240, 255, 0.4);
+		box-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
+		transform: translateY(-1px);
+	}
+
+	/* ===== RESPONSIVE ===== */
+	@media (max-width: 768px) {
+		.services-hero { padding: 3rem 1.5rem 2rem; }
+		.floor-section { padding: 2rem 1.5rem 1.5rem; }
+		.services-grid { grid-template-columns: 1fr; }
+		.contact-form-section { padding: 3rem 1.5rem; }
+		.checkbox-grid { grid-template-columns: 1fr; }
+		.form-row { grid-template-columns: 1fr; }
 	}
 </style>
+
+<script>
+	const initForm = () => {
+		const form = document.getElementById('requestForm') as HTMLFormElement;
+		if (!form) return;
+
+		form.addEventListener('submit', (e) => {
+			e.preventDefault();
+
+			const formData = new FormData(form);
+			const services = formData.getAll('services');
+			const data = {
+				services,
+				comment: formData.get('comment'),
+				name: formData.get('name'),
+				email: formData.get('email'),
+				phone: formData.get('phone'),
+			};
+
+			// TODO: подключить бэкенд (Formspree / Netlify Forms / собственный)
+			console.log('Form data:', data);
+
+			const btn = form.querySelector('.submit-btn') as HTMLButtonElement;
+			if (btn) {
+				btn.textContent = '✓ Заявка отправлена!';
+				btn.style.background = 'rgba(0, 240, 255, 0.15)';
+				btn.disabled = true;
+			}
+		});
+
+		// File upload visual feedback
+		const fileInput = document.getElementById('brief') as HTMLInputElement;
+		const fileLabel = document.querySelector('.file-label');
+		if (fileInput && fileLabel) {
+			fileInput.addEventListener('change', () => {
+				if (fileInput.files && fileInput.files.length > 0) {
+					fileLabel.textContent = `📄 ${fileInput.files[0].name}`;
+				}
+			});
+		}
+	};
+	document.addEventListener('DOMContentLoaded', initForm);
+	document.addEventListener('astro:page-load', initForm);
+</script>
