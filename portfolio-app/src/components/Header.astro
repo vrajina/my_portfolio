@@ -2,9 +2,7 @@
 ---
 <header class="site-header">
   <div class="logo">
-    <a href="/">
-      <img src="/logo.png" alt="KADATSKY" class="logo-img" />
-    </a>
+    <a href="/" class="logo-link">Kadatsky</a>
   </div>
   <nav class="main-nav" id="main-nav">
     <ul>
@@ -38,10 +36,22 @@
     background: rgba(8, 8, 8, 0.95);
     border-bottom: 1px solid rgba(0, 240, 255, 0.08);
   }
-  .logo-img {
-    height: 40px;
-    width: auto;
-    display: block;
+  .logo-link {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    text-decoration: none;
+    background: linear-gradient(135deg, var(--neon-cyan), #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transition: opacity 0.3s;
+  }
+  .logo-link:hover {
+    opacity: 0.8;
   }
 
   .main-nav {
