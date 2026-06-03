@@ -580,9 +580,23 @@ const allServices = [
 
 		phone.addEventListener('keydown', (e) => {
 			const input = e.target as HTMLInputElement;
-			if (e.key === 'Backspace' && input.value.length <= 4) {
+			if (e.key === 'Backspace') {
 				e.preventDefault();
-				input.value = '';
+				let digits = input.value.replace(/\D/g, '');
+				if (digits.length <= 1) {
+					input.value = '';
+					return;
+				}
+				digits = digits.slice(0, -1); // remove last digit
+
+				let formatted = '+7';
+				if (digits.length > 1) formatted += ' (' + digits.slice(1, 4);
+				if (digits.length >= 4) formatted += ') ';
+				if (digits.length > 4) formatted += digits.slice(4, 7);
+				if (digits.length > 7) formatted += '-' + digits.slice(7, 9);
+				if (digits.length > 9) formatted += '-' + digits.slice(9, 11);
+
+				input.value = formatted;
 			}
 		});
 
