@@ -7,7 +7,7 @@ import Footer from '../components/Footer.astro';
 	<main class="fullpage-container" id="fullpage">
 
 		<!-- Экран 1: Поверхность -->
-		<section class="screen screen-1" data-index="0">
+		<section class="screen screen-1" data-index="0" id="storefront">
 			<div class="screen-bg">
 				<img src="/floor-1-surface.jpg" alt="Эскиз верхушки e-commerce айсберга: покупатель видит только витрину интернет-магазина" />
 			</div>
@@ -27,7 +27,7 @@ import Footer from '../components/Footer.astro';
 		</section>
 
 		<!-- Экран 2: Продукт и контент -->
-		<section class="screen screen-2" data-index="1">
+		<section class="screen screen-2" data-index="1" id="product">
 			<div class="screen-bg">
 				<img src="/floor-2-product.jpg" alt="Подводный уровень айсберга: фотостудия, PIM-система и создание диджитал-контента" />
 			</div>
@@ -48,7 +48,7 @@ import Footer from '../components/Footer.astro';
 		</section>
 
 		<!-- Экран 3: Маркетинг -->
-		<section class="screen screen-3" data-index="2">
+		<section class="screen screen-3" data-index="2" id="marketing">
 			<div class="screen-bg">
 				<img src="/floor-3-marketing.jpg" alt="Глубинный уровень айсберга: маркетинговые каналы, SEO, таргет и бренд-стратегия" />
 			</div>
@@ -69,7 +69,7 @@ import Footer from '../components/Footer.astro';
 		</section>
 
 		<!-- Экран 4: Клиентский сервис -->
-		<section class="screen screen-4" data-index="3">
+		<section class="screen screen-4" data-index="3" id="client-service">
 			<div class="screen-bg">
 				<img src="/floor-4-service.jpg" alt="Подводный этаж айсберга: CRM, чат-боты, программы лояльности и омниканальные коммуникации" />
 			</div>
@@ -90,7 +90,7 @@ import Footer from '../components/Footer.astro';
 		</section>
 
 		<!-- Экран 5: Склад и логистика -->
-		<section class="screen screen-5" data-index="4">
+		<section class="screen screen-5" data-index="4" id="logistics">
 			<div class="screen-bg">
 				<img src="/floor-5-logistics.jpg" alt="Придонный этаж айсберга: складской фулфилмент и логистика доставки" />
 			</div>
@@ -111,7 +111,7 @@ import Footer from '../components/Footer.astro';
 		</section>
 
 		<!-- Экран 6: Разработка и ИИ-ядро -->
-		<section class="screen screen-6" data-index="5">
+		<section class="screen screen-6" data-index="5" id="dev-ai">
 			<div class="screen-bg">
 				<img src="/floor-6-ai.jpg" alt="Дно айсберга: ИИ-реактор, нейросети и автоматизация разработки" />
 			</div>
@@ -132,7 +132,7 @@ import Footer from '../components/Footer.astro';
 		</section>
 
 		<!-- Футер -->
-		<section class="screen screen-footer" data-index="6">
+		<section class="screen screen-footer" data-index="6" id="footer">
 			<Footer />
 		</section>
 
@@ -454,16 +454,18 @@ import Footer from '../components/Footer.astro';
 	const container = document.getElementById('fullpage');
 	const screens = document.querySelectorAll('.screen');
 	const dots = document.querySelectorAll('.dot');
+	let isAnimating = false;
+	let currentIndex = 0;
 
 	// Smooth scroll with easing
 	function smoothScrollTo(target, duration) {
-		if (!container) return;
+		if (!container || isAnimating) return;
 		const start = container.scrollTop;
 		const distance = target - start;
 		if (Math.abs(distance) < 2) return;
+		isAnimating = true;
 		let startTime = null;
 
-		// Temporarily disable snap during animation
 		container.style.scrollSnapType = 'none';
 
 		function ease(t) {
@@ -480,19 +482,53 @@ import Footer from '../components/Footer.astro';
 			if (progress < 1) {
 				requestAnimationFrame(step);
 			} else {
-				// Re-enable snap after animation
 				container.style.scrollSnapType = 'y mandatory';
+				isAnimating = false;
 			}
 		}
 		requestAnimationFrame(step);
 	}
 
-	// Scroll observer
+	function goToScreen(idx) {
+		if (idx < 0 || idx >= screens.length) return;
+		currentIndex = idx;
+		smoothScrollTo(screens[idx].offsetTop, 800);
+	}
+
+	// Wheel navigation — same smooth animation
+	let wheelCooldown = 0;
+	container?.addEventListener('wheel', (e) => {
+		e.preventDefault();
+		const now = Date.now();
+		if (isAnimating || now - wheelCooldown < 900) return;
+		wheelCooldown = now;
+
+		if (e.deltaY > 0 && currentIndex < screens.length - 1) {
+			goToScreen(currentIndex + 1);
+		} else if (e.deltaY < 0 && currentIndex > 0) {
+			goToScreen(currentIndex - 1);
+		}
+	}, { passive: false });
+
+	// Touch swipe navigation
+	let touchStartY = 0;
+	container?.addEventListener('touchstart', (e) => {
+		touchStartY = e.touches[0].clientY;
+	}, { passive: true });
+	container?.addEventListener('touchend', (e) => {
+		const dy = touchStartY - e.changedTouches[0].clientY;
+		if (Math.abs(dy) < 50 || isAnimating) return;
+		if (dy > 0 && currentIndex < screens.length - 1) goToScreen(currentIndex + 1);
+		else if (dy < 0 && currentIndex > 0) goToScreen(currentIndex - 1);
+	}, { passive: true });
+
+	// Scroll observer for dots + current index tracking
 	const observer = new IntersectionObserver((entries) => {
 		entries.forEach(entry => {
 			if (entry.isIntersecting) {
 				entry.target.classList.add('visible');
-				const idx = entry.target.dataset.index;
+				const idx = parseInt(entry.target.dataset.index);
+				if (!isNaN(idx)) currentIndex = idx;
 				dots.forEach(d => d.classList.remove('active'));
 				const activeDot = document.querySelector(`.dot[data-target="${idx}"]`);
 				if (activeDot) activeDot.classList.add('active');
@@ -504,14 +540,20 @@ import Footer from '../components/Footer.astro';
 
 	screens.forEach(s => observer.observe(s));
 
-	// Click navigation with smooth easing
+	// Click navigation
 	document.querySelectorAll('[data-target]').forEach(btn => {
 		btn.addEventListener('click', () => {
 			const target = parseInt(btn.dataset.target);
-			const targetScreen = document.querySelector(`.screen[data-index="${target}"]`);
-			if (targetScreen) {
-				smoothScrollTo(targetScreen.offsetTop, 800);
-			}
+			goToScreen(target);
 		});
 	});
+
+	// Handle hash anchors on load
+	if (location.hash) {
+		const el = document.querySelector(location.hash);
+		if (el) {
+			const idx = parseInt(el.dataset?.index);
+			if (!isNaN(idx)) setTimeout(() => goToScreen(idx), 100);
+		}
+	}
 </script>
