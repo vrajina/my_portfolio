@@ -7,7 +7,7 @@ import Footer from '../components/Footer.astro';
 	<main class="fullpage-container" id="fullpage">
 
 		<!-- Экран 1: Поверхность -->
-		<section class="screen screen-1" data-index="0" id="storefront">
+		<section class="screen screen-1" data-index="0">
 			<div class="screen-bg">
 				<img src="/floor-1-surface.jpg" alt="Эскиз верхушки e-commerce айсберга: покупатель видит только витрину интернет-магазина" />
 			</div>
@@ -522,7 +522,7 @@ import Footer from '../components/Footer.astro';
 		else if (dy < 0 && currentIndex > 0) goToScreen(currentIndex - 1);
 	}, { passive: true });
 
-	// Scroll observer for dots + current index tracking
+	// Scroll observer for dots + current index + URL hash
 	const observer = new IntersectionObserver((entries) => {
 		entries.forEach(entry => {
 			if (entry.isIntersecting) {
@@ -532,6 +532,14 @@ import Footer from '../components/Footer.astro';
 				dots.forEach(d => d.classList.remove('active'));
 				const activeDot = document.querySelector(`.dot[data-target="${idx}"]`);
 				if (activeDot) activeDot.classList.add('active');
+
+				// Update URL hash
+				const sectionId = entry.target.id;
+				if (sectionId) {
+					history.replaceState(null, '', '#' + sectionId);
+				} else {
+					history.replaceState(null, '', location.pathname);
+				}
 			} else {
 				entry.target.classList.remove('visible');
 			}
