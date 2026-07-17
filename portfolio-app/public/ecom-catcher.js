@@ -3,18 +3,38 @@
   'use strict';
 
   // === TERMS ===
+  // Good = useful e-com / digital toolkit
   const GOOD = [
-    'PIM','SEO','GEO','AI','OMS','CMS','CRM','ERP','CDP','WMS',
-    'KPI','LTV','ROAS','A/B','UX','API','BI','NPS','CTR','CR'
+    // Systems
+    'PIM', 'OMS', 'CMS', 'CRM', 'ERP', 'CDP', 'WMS', 'TMS', 'DAM', 'ESB',
+    'API', 'SDK', 'ETL', 'BI', 'DWH', 'SSO', 'RPA',
+    // Marketing & growth
+    'SEO', 'GEO', 'SEM', 'SEA', 'SMM', 'UGC', 'CRM-маркетинг', 'Email',
+    'Push', 'Retarget', 'Lookalike', 'A/B', 'MVT', 'CRO', 'UX', 'UI',
+    'CTA', 'Funnel', 'LTV', 'CAC', 'ROAS', 'ROMI', 'CTR', 'CR', 'AOV',
+    'NPS', 'CSAT', 'RFM', 'Cohort', 'Attribution',
+    // Product & ops
+    'SKU', 'PLP', 'PDP', 'Cart', 'Checkout', 'Omni', 'Click&Collect',
+    'Same Day', 'SLA', 'KPI', 'OKR', 'MVP', 'Roadmap', 'Backlog',
+    // AI / modern stack
+    'AI', 'LLM', 'RAG', 'ML', 'Chatbot', 'Personalization', 'Reco',
+    'Headless', 'Composable', 'Microservices', 'CI/CD', 'Observability'
   ];
+  // Bad = pain, noise, anti-patterns
   const BAD = [
-    'ASAP','Legacy','TD','WISMO','SLA Breach','OOS','LTV Drop',
-    'SPAM','DDoS','404','Downtime','Churn','Bug','Blocker',
-    'Scope Creep','FUD'
+    'ASAP', 'Legacy', 'Tech Debt', 'WISMO', 'SLA Breach', 'OOS', 'Stockout',
+    'LTV Drop', 'SPAM', 'DDoS', '404', '500', 'Downtime', 'Churn', 'Bug',
+    'Blocker', 'Scope Creep', 'FUD', 'Hotfix', 'Костыль', 'Hardcode',
+    'N+1', 'Bottleneck', 'Vendor Lock', 'Silos', 'Busywork', 'Meeting Hell',
+    'No Spec', 'No Analytics', 'Fake Urgency', 'Discount Spiral',
+    'Cart Abandon', 'Chargeback', 'Return Wave', 'Bad Data', 'Duplicate SKU',
+    'Broken Feed', 'SEO Penalty', 'Ad Fatigue', 'Click Fraud', 'Bot Traffic',
+    'Shadow IT', 'Manual Excel', 'Copy-Paste Ops', 'Hero Culture'
   ];
   const GOOD_PTS = 10;
   const BAD_PTS = -15;
   const MISS_GOOD_PTS = -5;
+  const RECENT_TERM_MEMORY = 8;
 
   // === CONFIG ===
   const FIELD_W = 400;
@@ -43,6 +63,14 @@
   // === HELPERS ===
   function rnd(a, b) { return Math.random() * (b - a) + a; }
   function pickDebuff() { return DEBUFFS[Math.floor(Math.random() * DEBUFFS.length)]; }
+  function pickTerm(pool, recent) {
+    // Prefer terms not seen in recent memory
+    for (let i = 0; i < 12; i++) {
+      const t = pool[Math.floor(Math.random() * pool.length)];
+      if (!recent.includes(t)) return t;
+    }
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
 
   // === GAME ===
   class Game {
@@ -145,6 +173,7 @@
       this.score = 0;
       this.lives = MAX_LIVES;
       this.terms = [];
+      this.recentTerms = [];
       this.debuffs = {};
       this.particles = [];
       this.elapsed = 0;
@@ -183,7 +212,12 @@
     _spawnTerm() {
       const isGood = Math.random() < 0.55;
       const pool = isGood ? GOOD : BAD;
-      const text = pool[Math.floor(Math.random() * pool.length)];
+      if (!this.recentTerms) this.recentTerms = [];
+      const text = pickTerm(pool, this.recentTerms);
+      this.recentTerms.push(text);
+      if (this.recentTerms.length > RECENT_TERM_MEMORY) {
+        this.recentTerms.shift();
+      }
       this.ctx.font = '10px ' + PIXEL_FONT;
       const tw = Math.max(this.ctx.measureText(text).width + TERM_PAD * 2, 50);
 
