@@ -19,16 +19,19 @@
   // === CONFIG ===
   const FIELD_W = 400;
   const FIELD_H = 650;
-  // Hero size: ~20% smaller than previous oversized version
-  const PLAYER_W = 64;
-  const PLAYER_H = 90;
+  // Natural sprite aspect ~396x836 → keep proportions (not stretched wide)
+  const PLAYER_W = 48;
+  const PLAYER_H = 102;
   const TERM_H = 28;
   const TERM_PAD = 12;
   const GROUND_Y = FIELD_H - 36;
   const BASE_FALL = 1.2;
   const FALL_INC = 0.12;
-  const SPAWN_START = 1600;
-  const SPAWN_MIN = 550;
+  // Wider spawn cadence so terms are more catchable
+  const SPAWN_START = 2100;
+  const SPAWN_MIN = 850;
+  // Min horizontal gap between concurrent falling terms
+  const TERM_GAP_X = 72;
   const DEBUFF_DUR = 3500;
   const MAX_LIVES = 3;
   const LEADERBOARD_SIZE = 10;
@@ -183,7 +186,35 @@
       const text = pool[Math.floor(Math.random() * pool.length)];
       this.ctx.font = '10px ' + PIXEL_FONT;
       const tw = Math.max(this.ctx.measureText(text).width + TERM_PAD * 2, 50);
-      const x = rnd(4, FIELD_W - tw - 4);
+
+      // Prefer X positions with enough horizontal gap from nearby falling terms
+      let x = rnd(4, FIELD_W - tw - 4);
+      let bestX = x;
+      let bestScore = -Infinity;
+      for (let attempt = 0; attempt < 10; attempt++) {
+        const candidate = rnd(4, FIELD_W - tw - 4);
+        let minDist = Infinity;
+        for (const t of this.terms) {
+          // Only care about terms still high enough to collide in decision window
+          if (t.y > GROUND_Y - PLAYER_H - 80) continue;
+          const a1 = candidate, a2 = candidate + tw;
+          const b1 = t.x, b2 = t.x + t.w;
+          const gap = Math.max(0, Math.max(b1 - a2, a1 - b2));
+          const centerDist = Math.abs((a1 + a2) / 2 - (b1 + b2) / 2);
+          minDist = Math.min(minDist, gap + centerDist * 0.25);
+        }
+        if (minDist === Infinity) minDist = TERM_GAP_X + 100;
+        if (minDist > bestScore) {
+          bestScore = minDist;
+          bestX = candidate;
+        }
+        if (minDist >= TERM_GAP_X) {
+          bestX = candidate;
+          break;
+        }
+      }
+      x = bestX;
+
       this.terms.push({ text, x, y: -TERM_H, w: tw, good: isGood, rot: rnd(-0.06, 0.06) });
     }
 
