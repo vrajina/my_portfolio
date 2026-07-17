@@ -19,11 +19,12 @@
   // === CONFIG ===
   const FIELD_W = 400;
   const FIELD_H = 650;
-  const PLAYER_W = 40;
-  const PLAYER_H = 56;
+  // Larger hero so manager matches office furniture scale
+  const PLAYER_W = 80;
+  const PLAYER_H = 112;
   const TERM_H = 28;
   const TERM_PAD = 12;
-  const GROUND_Y = FIELD_H - 50;
+  const GROUND_Y = FIELD_H - 36;
   const BASE_FALL = 1.2;
   const FALL_INC = 0.12;
   const SPAWN_START = 1600;
