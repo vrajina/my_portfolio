@@ -19,9 +19,9 @@
   // === CONFIG ===
   const FIELD_W = 400;
   const FIELD_H = 650;
-  // Larger hero so manager matches office furniture scale
-  const PLAYER_W = 80;
-  const PLAYER_H = 112;
+  // Hero size: ~20% smaller than previous oversized version
+  const PLAYER_W = 64;
+  const PLAYER_H = 90;
   const TERM_H = 28;
   const TERM_PAD = 12;
   const GROUND_Y = FIELD_H - 36;
