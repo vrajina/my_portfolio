@@ -37,8 +37,8 @@
   const LEADERBOARD_SIZE = 10;
   const PIXEL_FONT = '"Press Start 2P", monospace';
 
-  // Debuff pool for bad catches
-  const DEBUFFS = ['slow','invert','blur','shake','grow'];
+  // Debuff pool for bad catches (no control invert — feels like a bug)
+  const DEBUFFS = ['slow','blur','shake','grow'];
 
   // === HELPERS ===
   function rnd(a, b) { return Math.random() * (b - a) + a; }
@@ -257,7 +257,6 @@
       let dx = 0;
       if (this.keys['ArrowLeft'] || this.keys['a'] || this.keys['A']) dx = -spd;
       if (this.keys['ArrowRight'] || this.keys['d'] || this.keys['D']) dx = spd;
-      if (this._hasDebuff('invert')) dx = -dx;
       this.playerX += dx;
       this.playerX = Math.max(0, Math.min(FIELD_W - this.playerW, this.playerX));
 
@@ -420,7 +419,6 @@
       // Active debuffs bar
       const active = [];
       if (this._hasDebuff('slow')) active.push('🐌');
-      if (this._hasDebuff('invert')) active.push('🔄');
       if (this._hasDebuff('blur')) active.push('🌫️');
       if (this._hasDebuff('shake')) active.push('💥');
       if (this._hasDebuff('grow')) active.push('📏');
